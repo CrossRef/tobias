@@ -15,9 +15,9 @@ module Tobias
       end
     end
 
-    def collection name
+    def collection collection_name
       @mongo ||= Mongo::Connection.new @config["mongo-server"]
-      @mongo[name]
+      @mongo[@config["mongo-name"]][collection_name]
     end
 
   end

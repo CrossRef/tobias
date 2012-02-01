@@ -1,7 +1,8 @@
 {
   "oxford": {
     "redis-server": "localhost",
-    "mongo-server": "localhost"
+    "mongo-server": "localhost",
+    "mongo-name": "crossref"
   },
   "ec2": {
     "redis-server": "",
@@ -9,6 +10,7 @@
   },
   "default": {
     "redis-server": "localhost",
-    "mongo-server": "localhost"
+    "mongo-server": "localhost",
+    "mongo-name": "crossref"
   }
 }
