@@ -1,5 +1,6 @@
 require "resque"
 require_relative "tasks"
+require_relative "config"
 
 module Tobias
 
