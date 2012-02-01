@@ -10,8 +10,8 @@ module Tobias
       Config.load!
 
       coll = Config.collection "citations"
-      coll.ensure_index "from.doi"
-      coll.ensure_index "to.doi"
+      coll.create_index "from.doi"
+      coll.create_index "to.doi"
 
       Resque.enqueue(DispatchDirectory, "/data/crossref-citations")
     end
