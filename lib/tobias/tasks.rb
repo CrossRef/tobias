@@ -7,6 +7,8 @@ require_relative "config"
 
 module Tobias
 
+  Config.load!
+
   class DispatchDirectory
     @queue = :directories
 
@@ -37,7 +39,7 @@ module Tobias
 
     def self.perform(xml)
       record = Record.new(Nokogiri::XML(xml))
-      coll = Config.mongo["citations"]
+      coll = Config.collection "citations"
 
       record.citations.each do |citation|
         cite_doc = {
