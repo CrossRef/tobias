@@ -13,9 +13,6 @@ module Tobias
     @queue = :directories
 
     def self.perform(directory_name)
-      @citations.ensure_index "from.doi"
-      @citations.ensure_index "to.doi"
-      
       Dir.new(directory_name).each do |filename|
         if filename.end_with? ".xml"
           Resque.enqueue(SplitRecordList, File.join(directory_name, filename))

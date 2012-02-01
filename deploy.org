@@ -13,9 +13,27 @@
    dbpath=/data/mongodb
 ** For cloud?
 
+* MongoDB Start / Stop
+
+  Use upstart
+  $ sudo service mongodb start
+
 * Redis
 
   $ wget http://redis.googlecode.com/files/redis-2.4.6.tar.gz
   $ tar xzf redis-2.4.6.tar.gz
   $ cd redis-2.4.6
   $ make
+  $ sudo make install
+  $ cd utils
+  $ sudo sh install_server.sh
+    -> In oxford set data directory to /data/redis?
+
+* Redis Config
+
+* Redis Start / Stop
+
+  Use upstart
+  $ sudo service redis-server start
+
+* TODO Turn all this into deployment scripts.
