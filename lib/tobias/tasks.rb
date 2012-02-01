@@ -25,8 +25,9 @@ module Tobias
     @queue = :files
 
     def self.perform(filename)
+      grid = Config.grid
       ListRecords.new(File.new(filename)).each_record do |record_xml|
-        Resque.enqueue(ParseRecord, record_xml)
+        Resque.enqueue(ParseRecord, grid.put(record_xml))
       end
     end
   end
@@ -34,8 +35,9 @@ module Tobias
   class ParseRecord
     @queue = :records
 
-    def self.perform(xml)
-      record = Record.new(Nokogiri::XML(xml))
+    def self.perform(id)
+      grid = Config.grid
+      record = Record.new(grid.get(id).data)
       coll = Config.collection "citations"
 
       record.citations.each do |citation|
@@ -49,6 +51,8 @@ module Tobias
         }
         coll.insert cite_doc
       end
+
+      grid.delete(id)
     end
   end
 
