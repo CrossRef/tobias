@@ -1,10 +1,21 @@
 require "resque"
 require_relative "tasks"
 
-Config.load!
+module Tobias
 
-coll = Config.collection "citations"
-coll.ensure_index "from.doi"
-coll.ensure_index "to.doi"
+  class Runner
 
-Resque.enqueue(DispatchDirectory, "/data/crossref-citations")
+    def initialize
+      Config.load!
+
+      coll = Config.collection "citations"
+      coll.ensure_index "from.doi"
+      coll.ensure_index "to.doi"
+
+      Resque.enqueue(DispatchDirectory, "/data/crossref-citations")
+    end
+
+  end
+end
+
+Tobias::Runner.new
