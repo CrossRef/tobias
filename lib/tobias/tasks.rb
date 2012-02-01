@@ -1,7 +1,9 @@
 require "resque"
 require "mongo"
+require "nokogiri"
 require_relative "oai/record"
 require_relative "oai/list_records"
+require_relative "config"
 
 module Tobias
 
@@ -34,7 +36,7 @@ module Tobias
     @queue = :records
 
     def self.perform(xml)
-      record = Record.new(xml)
+      record = Record.new(Nokogiri::XML(xml))
 
       record.citations.each do |citation|
         cite_doc = {

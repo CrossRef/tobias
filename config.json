@@ -1,10 +1,14 @@
 {
   "oxford": {
-    "redis-server": "192.168.1.151",
-    "mongo-server": "192.168.1.151"
+    "redis-server": "localhost",
+    "mongo-server": "localhost"
   },
   "ec2": {
     "redis-server": "",
     "mongo-server": ""
+  },
+  "default": {
+    "redis-server": "localhost",
+    "mongo-server": "localhost"
   }
 }

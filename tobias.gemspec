@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = "tobias"
   s.version = "0.0.1"
-  s.summary = "CrossRef OAI-PMH result data parser work flow queue thing."
+  s.summary = "CrossRef OAI-PMH result data parser work flow queue thing"
   s.files = Dir.glob("{lib,data,spec}/**/**/*")
   s.authors = ["Karl Jonathan Ward"]
   s.email = ["kward@crossref.org"]

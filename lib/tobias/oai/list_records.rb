@@ -1,5 +1,4 @@
 require "nokogiri"
-require_relative "record"
 
 module Tobias
   module Oai
