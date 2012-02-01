@@ -37,6 +37,7 @@ module Tobias
 
     def self.perform(xml)
       record = Record.new(Nokogiri::XML(xml))
+      coll = Config.mongo["citations"]
 
       record.citations.each do |citation|
         cite_doc = {
@@ -47,7 +48,7 @@ module Tobias
             :publication_date => record.publication_date
           }
         }
-        @citations.insert cite_doc
+        coll.insert cite_doc
       end
     end
   end
