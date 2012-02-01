@@ -1,0 +1,86 @@
+<record xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <header>
+      <!-- citation-id: 33379207; type: journal_article; -->
+      <identifier>info:doi/10.1504/IJIR.2008.019205</identifier>
+      <datestamp>1970-01-14</datestamp>
+      <setSpec>J</setSpec>
+      <setSpec>J:1504</setSpec>
+      <setSpec>J:1504:76299</setSpec>
+      </header>
+      <metadata>
+      <crossref xmlns="http://www.crossref.org/xschema/1.0"
+                xsi:schemaLocation="http://www.crossref.org/xschema/1.0
+                                    http://www.crossref.org/schema/unixref1.0.xsd">
+      <journal>
+      <journal_metadata language="en">
+      <full_title>International Journal of Inventory Research</full_title>
+      <abbrev_title>IJIR</abbrev_title>
+      <issn media_type="print">1746-6962</issn>
+      <issn media_type="electronic">1746-6970</issn>
+      </journal_metadata>
+      <journal_issue>
+      <publication_date media_type="print">
+      <year>2008</year>
+      </publication_date>
+      <journal_volume><volume>1</volume></journal_volume>
+      <issue>1</issue>
+      </journal_issue>
+      <journal_article publication_type="full_text">
+      <titles>
+      <title>
+        Optimal replenishment in a Brownian Motion EOQ model with hysteretic
+        parameter changes
+      </title>
+      </titles>
+      <contributors>
+      <person_name sequence="first" contributor_role="author">
+        <given_name>Oded</given_name><surname>Berman</surname>
+      </person_name>
+      <person_name sequence="additional" contributor_role="author">
+        <given_name>David</given_name><surname>Perry</surname>
+      </person_name>
+      <person_name sequence="additional" contributor_role="author">
+        <given_name>Wolfgang</given_name><surname>Stadje</surname>
+      </person_name>
+      </contributors>
+      <publication_date media_type="print"><year>2008</year></publication_date>
+      <pages><first_page>1</first_page></pages>
+      <publisher_item>
+      <item_number item_number_type="article_number">19205</item_number>
+      </publisher_item>
+      <doi_data><doi>10.1504/IJIR.2008.019205</doi>
+      <timestamp>1215084602</timestamp>
+      <resource>http://www.inderscience.com/link.php?id=19205</resource>
+      </doi_data>
+      <citation_list>
+      <citation key="10.1002/(SICI)1098-2302(199601)29:1&lt;1::AID-DEV1&gt;3.0.CO;2-Y-BIB1">
+      <journal_title>Experimental Neurology</journal_title>
+      <author>Albuquerque</author>
+      <volume>26</volume>
+      <first_page>183</first_page>
+      <cYear>1970</cYear>
+      </citation>
+      <citation key="10.1002/(SICI)1098-2302(199601)29:1&lt;1::AID-DEV1&gt;3.0.CO;2-Y-BIB2">
+      <journal_title>Animal Behaviour</journal_title>
+      <author>Altman</author>
+      <volume>23</volume>
+      <first_page>896</first_page>
+      <cYear>1975</cYear>
+      </citation>
+      <citation key="10.1002/(SICI)1098-2302(199601)29:1&lt;1::AID-DEV1&gt;3.0.CO;2-Y-BIB3">
+      <journal_title>Science</journal_title>
+      <author>Aserinsky</author>
+      <volume>118</volume>
+      <first_page>273</first_page>
+      <cYear>1953</cYear>
+      </citation>
+      <citation key="10.1002/(SICI)1098-2302(199601)29:1&lt;1::AID-DEV1&gt;3.0.CO;2-Y-BIB9">
+      <author>Blumberg</author>
+      <unstructured_citation>&amp; (in press). Thermogenesis, myoclonic twitching, and ultrasound production in neonatal rats during moderate and extreme cold exposure. Behavioral Neuroscience.</unstructured_citation>
+      </citation>
+      </citation_list>
+      </journal_article>
+      </journal>
+      </crossref>
+      </metadata>
+</record>

@@ -1,0 +1,10 @@
+{
+  "oxford": {
+    "redis-server": "192.168.1.151",
+    "mongo-server": "192.168.1.151"
+  },
+  "ec2": {
+    "redis-server": "",
+    "mongo-server": ""
+  }
+}

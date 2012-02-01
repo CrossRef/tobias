@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/  http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+<responseDate>2012-01-24T20:05:55</responseDate>
+<request verb="ListRecords" set="J:10.6003:157505" metadataPrefix="10.6003">http://oai.crossref.org/OAIHandler</request>
+<ListRecords>
+<record>
+<header>
+  <!-- citation-id: 52960231; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261a1</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>The Clinical and Histological Skin Changes After the Cupping Therapy (Al-Hijamah)</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Kadhim</given_name><surname>Qasim Ali Al-Rubaye</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261a1</doi><resource>http://www.jtad.org/2012/1/jtad1261a1.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960232; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261a2</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>The Prevalence of Psoriasis and Vitiligo in a Rural Area in Turkey</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Server</given_name><surname>Serdaroğlu</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261a2</doi><resource>http://www.jtad.org/2012/1/jtad1261a2.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960234; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261c1</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>Chloramphenicol Induced Vitiligo-like Depigmentation</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Zekayi</given_name><surname>Kutlubay</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261c1</doi><resource>http://www.jtad.org/2012/6/jtad1261c1.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960235; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261c2</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>Atypical Fibroxanthoma</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Mehmet Kamil</given_name><surname>Mülayim</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261c2</doi><resource>http://www.jtad.org/2012/1/jtad1261c2.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960236; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261c3</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>Bullous Mastocytosis in an Infant</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Filiz</given_name><surname>Canpolat</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261c3</doi><resource>http://www.jtad.org/2012/6/jtad1261c3.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960237; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261c4</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>A Case of Pityriasis Rubra Pilaris Associated with Myasthenia Gravis</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Ümit</given_name><surname>Türsen</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261c4</doi><resource>http://www.jtad.org/2012/6/jtad1261c4.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960239; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261m1</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>To the Memory of Professor Aydın İşçimen</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Oya</given_name><surname>Oğuz</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261m1</doi><resource>http://www.jtad.org/2012/6/jtad1261m1.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960238; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261q1</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>Chronic, Brown-Red, Macular and Papular Rash in a Child</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Mehmet</given_name><surname>Davudoğlu</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261q1</doi><resource>http://www.jtad.org/2012/1/jtad1261q1.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+<record>
+<header>
+  <!-- citation-id: 52960233; type: journal_article; -->
+  <identifier>info:doi/10.6003/jtad.1261r1</identifier>
+  <datestamp>1976-05-16</datestamp>
+  <setSpec>J</setSpec>
+  <setSpec>J:6003</setSpec>
+  <setSpec>J:6003:157505</setSpec>
+</header>
+<metadata>
+  <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+<journal><journal_metadata><full_title>Journal of the Turkish Academy of Dermatology</full_title><abbrev_title>J Turk Acad Dermatol</abbrev_title><issn media_type="electronic">1307394X</issn></journal_metadata><journal_issue><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><journal_volume><volume>6</volume></journal_volume><issue>1</issue></journal_issue><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><!-- ============== --><journal_article publication_type="full_text"><titles><title>Ancient to Recent Skin Care in Turkish Cypriots:Bitter-Orange Blossom Water</title></titles><contributors><person_name sequence="first" contributor_role="author"><given_name>Aslı Feride</given_name><surname>Kaptanoğlu</surname></person_name></contributors><publication_date media_type="online"><month>1</month><day>2</day><year>2012</year></publication_date><doi_data><doi>10.6003/jtad.1261r1</doi><resource>http://www.jtad.org/2012/1/jtad1261r1.pdf</resource></doi_data></journal_article></journal></crossref></metadata>
+</record>
+</ListRecords>
+</OAI-PMH>
