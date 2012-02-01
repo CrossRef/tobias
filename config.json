@@ -1,12 +1,12 @@
 {
-  "oxford": {
+  "habanero": {
     "redis-server": "localhost",
     "mongo-server": "localhost",
     "mongo-name": "crossref"
   },
-  "ec2": {
-    "redis-server": "",
-    "mongo-server": ""
+  "chipotle": {
+    "redis-server": "192.168.1.152",
+    "mongo-server": "192.168.1.152"
   },
   "default": {
     "redis-server": "localhost",

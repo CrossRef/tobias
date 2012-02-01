@@ -6,17 +6,15 @@ module Tobias
 
   class Runner
 
-    def initialize
+    def initialize dir_name
       Config.load!
 
       coll = Config.collection "citations"
       coll.create_index "from.doi"
       coll.create_index "to.doi"
 
-      Resque.enqueue(DispatchDirectory, "/data/crossref-citations")
+      Resque.enqueue(DispatchDirectory, dir_name)
     end
 
   end
 end
-
-Tobias::Runner.new

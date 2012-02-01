@@ -7,7 +7,7 @@ module Tobias
     extend self
 
     @filename = File.join(File.dirname(__FILE__), "..", "..", "config.json")
-    @location = ENV["LOCATION"] || "default"
+    @location = ENV["HOSTNAME"] || "default"
     
     def load!(filename = @filename, location = @location)
       File.open filename, "rb" do |file|
