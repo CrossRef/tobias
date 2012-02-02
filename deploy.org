@@ -27,9 +27,11 @@
   $ sudo make install
   $ cd utils
   $ sudo sh install_server.sh
-    -> In oxford set data directory to /data/redis?
 
 * Redis Config
+
+** For local machines with SSD on /data:
+   dir /data/redis
 
 * Redis Start / Stop
 

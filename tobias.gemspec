@@ -11,5 +11,6 @@ Gem::Specification.new do |s|
   s.add_dependency "resque"
   s.add_dependency "mongo"
   s.add_dependency "nokogiri"
+  s.add_dependency "rspec"
 end
 

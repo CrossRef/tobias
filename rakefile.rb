@@ -1,5 +1,6 @@
 require "rspec/core/rake_task"
 require "resque/tasks"
+require_relative "lib/tobias/runner"
 
 desc "Run RSpec over tests in /spec"
 RSpec::Core::RakeTask.new
