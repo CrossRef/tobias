@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Create an rspec test runner task.
 require "rspec/core/rake_task"
 
@@ -9,6 +10,10 @@ require "resque/tasks"
 
 task "resque:setup" do
   require_relative "lib/tobias/tasks"
+  require_relative "lib/tobias/config"
+
+  Tobias::Config.load!
+  Tobias::Config.redis!
 end
 
 # Create a directory loading task.

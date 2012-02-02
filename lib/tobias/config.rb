@@ -1,36 +1,40 @@
 require "json"
 require "mongo"
+require "resque"
 
 module Tobias
 
   module Config
-    extend self
 
-    @filename = File.join(File.dirname(__FILE__), "..", "..", "config.json")
-    @location = ENV["CONFIG"] || "local"
+    @@filename = File.join(File.dirname(__FILE__), "..", "..", "config.json")
+    @@location = ENV["CONFIG"] || "local"
     
-    def load!(filename = @filename, location = @location)
+    def self.load!(filename = @@filename, location = @@location)
       File.open filename, "rb" do |file|
-        @config = JSON.parse(file.read)[location]
+        @@config = JSON.parse(file.read)[location]
       end
     end
 
-    def mongo
-      @mongo ||= Mongo::Connection.new(@config["mongo-server"])
+    def self.redis!
+      Resque.redis = @@config["redis-server"]
+    end
+
+    def self.mongo
+      @@mongo ||= Mongo::Connection.new(@@config["mongo-server"])
     end
     
-    def collection collection_name
-      mongo[@config["mongo-name"]][collection_name]
+    def self.collection collection_name
+      mongo[@@config["mongo-name"]][collection_name]
     end
 
-    def grid
-      @grid ||= Mongo::Grid.new(mongo[@config["mongo-name"]])
+    def self.grid
+      @@grid ||= Mongo::Grid.new(mongo[@@config["mongo-name"]])
     end
 
-    def shutdown!
-      if not @mongo.nil?
-        @mongo.close
-        @mongo = nil
+    def self.shutdown!
+      if not @@mongo.nil?
+        @@mongo.close
+        @@mongo = nil
       end
     end
 

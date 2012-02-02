@@ -7,9 +7,17 @@ require_relative "config"
 
 module Tobias
 
-  Config.load!
+  class ConfigTask
+    def self.before_perform_config(*args)
+      Config.load!
+    end
 
-  class DispatchDirectory
+    def self.after_perform_config(*args)
+      Config.shutdown!
+    end
+  end
+
+  class DispatchDirectory < ConfigTask
     @queue = :directories
 
     def self.perform(directory_name)
@@ -21,39 +29,51 @@ module Tobias
     end
   end
 
-  class SplitRecordList
+  class SplitRecordList < ConfigTask
     @queue = :files
 
     def self.perform(filename)
       grid = Config.grid
+      ids = []
+      
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
-        Resque.enqueue(ParseRecord, grid.put(record_xml).to_s)
+        ids << grid.put(record_xml).to_s
+        if (ids.count % 5000).zero?
+          Resque.enqueue(ParseRecords, ids)
+          ids = []
+        end
       end
+
+      Resque.enqueue(ParseRecords, ids) unless ids.empty?
     end
   end
 
-  class ParseRecord
+  class ParseRecords < ConfigTask
     @queue = :records
 
-    def self.perform(id)
-      oid = BSON::ObjectId.from_string id
+    def self.perform(ids)
       grid = Config.grid
-      record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
       coll = Config.collection "citations"
+      docs = []
 
-      docs = record.citations.map do |citation|
-        {
-          :from => record.doi,
-          :to => citation,
-          :context => {
-            :header => record.header,
-            :publication_date => record.publication_date
+      ids.each do |id|
+        oid = BSON::ObjectId.from_string id
+        record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
+        
+        docs = record.citations.map do |citation|
+          {
+            :from => record.doi,
+            :to => citation,
+            :context => {
+              :header => record.header,
+              :publication_date => record.publication_date
+            }
           }
-        }
-      end
+        end
 
-      coll.insert(docs)
-      grid.delete(oid)
+        coll.insert(docs)
+        grid.delete(oid)
+      end
     end
   end
 
