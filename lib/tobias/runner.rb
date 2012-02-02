@@ -14,6 +14,8 @@ module Tobias
       coll.create_index "to.doi"
 
       Resque.enqueue(DispatchDirectory, dir_name)
+
+      Config.shutdown!
     end
 
   end

@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">=1.9.1"
 
   s.add_dependency "resque"
+  s.add_dependency "resque-jobs-per-fork"
   s.add_dependency "mongo"
   s.add_dependency "nokogiri"
   s.add_dependency "rspec"

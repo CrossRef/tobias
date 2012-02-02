@@ -25,11 +25,16 @@ module Tobias
         }
       end
 
+      # Returns the citing DOI, if any.
       def doi
-        @doi ||= {
-          :doi => @citing_node.at_css("doi_data doi", @@ns).text,
-          :resource => @citing_node.at_css("doi_data resource", @@ns).text
-        }
+	if @citing_node.nil?
+	  {}
+	else
+          @doi ||= {
+            :doi => @citing_node.at_css("doi_data doi", @@ns).text,
+            :resource => @citing_node.at_css("doi_data resource", @@ns).text
+          }
+	end
       end
 
       def publication_date
@@ -46,12 +51,16 @@ module Tobias
       end
 
       def citations
-        @citations ||= @citing_node.css("citation", @@ns).map do |cite_node|
-          citation = {:key => cite_node["key"]}
-          cite_node.children.reject {|n| not n.element? }.each do |cite_item_node|
-            citation[cite_item_node.name.to_sym] = cite_item_node.text
+	if @citing_node.nil?
+	  []
+	else
+          @citations ||= @citing_node.css("citation", @@ns).map do |cite_node|
+            citation = {:key => cite_node["key"]}
+            cite_node.children.reject {|n| not n.element? }.each do |cite_item_node|
+              citation[cite_item_node.name.to_sym] = cite_item_node.text
+            end
+            citation
           end
-          citation
         end
       end
 

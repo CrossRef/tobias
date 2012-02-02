@@ -26,8 +26,8 @@ module Tobias
 
     def self.perform(filename)
       grid = Config.grid
-      ListRecords.new(File.new(filename)).each_record do |record_xml|
-        Resque.enqueue(ParseRecord, grid.put(record_xml))
+      Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
+        Resque.enqueue(ParseRecord, grid.put(record_xml).to_s)
       end
     end
   end
@@ -36,12 +36,13 @@ module Tobias
     @queue = :records
 
     def self.perform(id)
+      oid = BSON::ObjectId.from_string id
       grid = Config.grid
-      record = Record.new(grid.get(id).data)
+      record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
       coll = Config.collection "citations"
 
-      record.citations.each do |citation|
-        cite_doc = {
+      docs = record.citations.map do |citation|
+        {
           :from => record.doi,
           :to => citation,
           :context => {
@@ -49,10 +50,10 @@ module Tobias
             :publication_date => record.publication_date
           }
         }
-        coll.insert cite_doc
       end
 
-      grid.delete(id)
+      coll.insert(docs)
+      grid.delete(oid)
     end
   end
 

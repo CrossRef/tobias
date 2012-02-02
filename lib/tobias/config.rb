@@ -16,7 +16,7 @@ module Tobias
     end
 
     def mongo
-      @mongo ||= Mongo::Connection.new @config["mongo-server"]
+      @mongo ||= Mongo::Connection.new(@config["mongo-server"])
     end
     
     def collection collection_name
@@ -24,7 +24,14 @@ module Tobias
     end
 
     def grid
-      @grid ||= Grid.new(mongo[@config["mongo-name"]])
+      @grid ||= Mongo::Grid.new(mongo[@config["mongo-name"]])
+    end
+
+    def shutdown!
+      if not @mongo.nil?
+        @mongo.close
+        @mongo = nil
+      end
     end
 
   end
