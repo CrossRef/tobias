@@ -1,27 +1,12 @@
 {
-  "habanero": {
+  "local": {
     "redis-server": "localhost",
     "mongo-server": "localhost",
     "mongo-name": "crossref"
   },
-  "chipotle": {
+  "oxford": {
     "redis-server": "192.168.1.152",
     "mongo-server": "192.168.1.152",
-    "mongo-name": "crossref"
-  },
-  "ancho": {
-    "redis-server": "192.168.1.152",
-    "mongo-server": "192.168.1.152",
-    "mongo-name": "crossref"
-  }
-  "edgar.local": {
-    "redis-server": "192.168.1.152",
-    "mongo-server": "192.168.1.152",
-    "mongo-name": "crossref"
-  }
-  "default": {
-    "redis-server": "localhost",
-    "mongo-server": "localhost",
     "mongo-name": "crossref"
   }
 }
