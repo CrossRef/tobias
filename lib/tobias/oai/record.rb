@@ -26,7 +26,7 @@ module Tobias
       end
 
       # Returns the citing DOI, if any.
-      def doi
+      def citing_doi
 	if @citing_node.nil?
 	  {}
 	else
@@ -73,7 +73,7 @@ module Tobias
       # - report_paper
       # - standard
       # - dataset
-      def kind
+      def citing_kind
         @citing_node.name.sub(/_metadata\Z/, "").gsub(/-/, "_")
       end
 

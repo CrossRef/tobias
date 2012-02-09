@@ -17,7 +17,7 @@ module Tobias
     end
   end
 
-  class DispatchDirectory < ConfigTask
+  class DispatchDirectory
     @queue = :directories
 
     def self.perform(directory_name)
@@ -62,11 +62,12 @@ module Tobias
         
         docs = record.citations.map do |citation|
           {
-            :from => record.doi,
+            :from => record.citing_doi,
             :to => citation,
             :context => {
               :header => record.header,
-              :publication_date => record.publication_date
+              :publication_date => record.publication_date,
+              :kind => record.citing_kind
             }
           }
         end
