@@ -2,13 +2,13 @@ var mapF = function() {
   var value = {cite_count: 1, url_count: 0, dx_url_count: 0}
   var citation = this.to.unstructured_citation
 
-  if (citation.search(/http:\/\/dx\.doi\.org/)) {
+  if (citation.search(/http:\/\/dx\.doi\.org/) !== -1) {
     value["dx_url_count"] = 1
-  } else if (citation.search(/https?:\/\/[^\s]+/)) {
+  } else if (citation.search(/https?:\/\/[^\s]+/) !== -1) {
     value["url_count"] = 1
   }
   
-  emit(this.context.publication_date, value)
+  emit(this.context.publication_date.year, value)
 }
 
 var reduceF = function(key, vals) {
