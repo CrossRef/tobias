@@ -1,25 +1,25 @@
 var mapF = function() {
-  value = {cite_count: 1, url_count: 0, dx_url_count: 0}
-  citation = this.to.unstructured_citation
+  var value = {cite_count: 1, url_count: 0, dx_url_count: 0}
+  var citation = this.to.unstructured_citation
 
-  if (citation.search(/http://dx\.doi\.org/)) {
+  if (citation.search(/http:\/\/dx\.doi\.org/)) {
     value["dx_url_count"] = 1
-  } else if (citation.search(/https?://[^\s]+/)) {
+  } else if (citation.search(/https?:\/\/[^\s]+/)) {
     value["url_count"] = 1
   }
   
-  emit(this.publication_date, value)
+  emit(this.context.publication_date, value)
 }
 
 var reduceF = function(key, vals) {
-  var cite_sum = 0, url_sum = 0, dx_url_sum = 0
+  var citeSum = 0, urlSum = 0, dxUrlSum = 0
   for (var i in vals) {
-    cite_sum += vals["cite_count"]
-    url_sum += vals["url_count"]
-    dx_url_sum += vals["dx_url_count"]
+    citeSum += vals[i]["cite_count"]
+    urlSum += vals[i]["url_count"]
+    dxUrlSum += vals[i]["dx_url_count"]
   }
   
-  return {cite_count: cite_sum, url_count: url_sum, dx_url_count: dx_url_sum}
+  return {cite_count: citeSum, url_count: urlSum, dx_url_count: dxUrlSum}
 }
 
 db.runCommand({
@@ -27,5 +27,6 @@ db.runCommand({
   map: mapF,
   reduce: reduceF,
   query: {"to.unstructured_citation": {"$exists": true}},
-  out: {replace: "url_counts"}
+  out: {replace: "url_counts"},
+  verbose: true
 })
