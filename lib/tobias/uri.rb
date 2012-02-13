@@ -33,6 +33,8 @@ module URI
           if dict.key? p
             parts << p
             dict = dict[p]
+          else
+            break
           end
         end
         @tld = parts.reverse.join "."
