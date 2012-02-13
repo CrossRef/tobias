@@ -1,6 +1,7 @@
 require "resque"
 require "mongo"
 require "nokogiri"
+require "pp"
 require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
@@ -83,19 +84,29 @@ module Tobias
     def self.perform
       coll = Config.collection "citations"
       query = {"to.unstructured_citation" => {"$exists" => true}}
+      checked = 0
       coll.find(query).each do |doc|
+        checked = checked.next
+        puts "Checked #{checked} u citations" if (checked % 100000).zero?
         citation = doc["to"]["unstructured_citation"]
-        match = citation.match(/(https?)|ftp:\/\/[^\s]+/)
+        match = citation.match(/https?:\/\/[^\s]+/)
         if not match.nil?
           url = match[0]
-          url = url.chomp(")").chomp(",").chomp(".")
-          uri = URI(url)
-          doc["url"] = {
-            :full => url,
-            :tld => uri.tld,
-            :root => uri.root,
-            :sub => uri.sub
-          }
+          url = url.chomp(").").chomp(">.").chomp("].").chomp("}.")
+          url = url.chomp("),").chomp(">,").chomp("],").chomp("},")
+          url = url.chomp(")").chomp(",").chomp(".").chomp(">").chomp("]")
+          url = url.chomp("}")
+          begin
+            uri = URI(url)
+            doc["url"] = {
+              :full => url,
+              :tld => uri.tld,
+              :root => uri.root,
+              :sub => uri.sub
+            }
+          rescue StandardError => e
+            doc["url"] = {:full => url}
+          end
           coll.save doc
         end
       end
@@ -103,14 +114,14 @@ module Tobias
   end
 
   def self.run_once task
-    task.public_methods.reject {|name| !name.start_with? "before"}.each do |name|
-      task.call name
+    task.public_methods.reject {|n| !n.to_s.start_with? "before"}.each do |name|
+      task.public_method(name).call
     end
 
-    task.call :perform
+    task.public_method(:perform).call
 
-    task.public_methods.reject {|name| !name.start_with? "after"}.each do |name|
-      task.call name
+    task.public_methods.reject {|n| !n.to_s.start_with? "after"}.each do |name|
+      task.public_method(name).call
     end
   end
 

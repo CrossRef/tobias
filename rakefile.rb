@@ -22,3 +22,8 @@ task :queue_dir do
   require_relative "lib/tobias/runner"
   Tobias::Runner.new(ENV["DIR"] || "/data/crossref-citations")
 end
+
+task :parse_urls do
+  require_relative "lib/tobias/tasks"
+  Tobias.run_once Tobias::ParseUrls
+end
