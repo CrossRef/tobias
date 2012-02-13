@@ -4,6 +4,7 @@ require "nokogiri"
 require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
+require_relative "uri"
 
 module Tobias
 
@@ -75,6 +76,41 @@ module Tobias
         coll.insert(docs)
         grid.delete(oid)
       end
+    end
+  end
+
+  class ParseUrls < ConfigTask
+    def self.perform
+      coll = Config.collection "citations"
+      query = {"to.unstructured_citation" => {"$exists" => true}}
+      coll.find(query).each do |doc|
+        citation = doc["to"]["unstructured_citation"]
+        match = citation.match(/(https?)|ftp:\/\/[^\s]+/)
+        if not match.nil?
+          url = match[0]
+          url = url.chomp(")").chomp(",").chomp(".")
+          uri = URI(url)
+          doc["url"] = {
+            :full => url,
+            :tld => uri.tld,
+            :root => uri.root,
+            :sub => uri.sub
+          }
+          coll.save doc
+        end
+      end
+    end
+  end
+
+  def self.run_once task
+    task.public_methods.reject {|name| !name.start_with? "before"}.each do |name|
+      task.call name
+    end
+
+    task.call :perform
+
+    task.public_methods.reject {|name| !name.start_with? "after"}.each do |name|
+      task.call name
     end
   end
 
