@@ -63,27 +63,33 @@ module URI
       end
     end
 
-    # Returns one of :timeout, :other, :error  or :ok after attempts to
+    # Returns one of :*_error, :other, :error  or :ok after attempts to
     # resolve the URI. Will follow redirects.
     def status limit=10, uri=self
-      begin
-        response = Net::HTTP.start(uri.host, uri.port) do |http|
-          request = Net::HTTP::Get.new uri.request_uri
-          http.request request
+      if limit.zero?
+        {:status => :redirect_error}
+      else
+        begin
+          response = Net::HTTP.start(uri.host, uri.port) do |http|
+            request = Net::HTTP::Get.new uri.request_uri
+            http.request request
+          end
+          
+          case response
+          when Net::HTTPSuccess then
+            {:status => :ok}
+          when Net::HTTPRedirection then
+            status(limit - 1, uri.merge(response["Location"]))
+          else
+            {:status => :other, :code => response.code.to_i}
+          end
+        rescue SocketError => e
+          {:status => :socket_error}
+        rescue TimeoutError => e
+          {:status => :timeout_error}
+        rescue StandardError => e
+          {:status => :error, :e => e}
         end
-
-        case response
-        when Net::HTTPSuccess then
-          {:status => :ok}
-        when Net::HTTPRedirection then
-          status(limit - 1, URI(response["Location"]))
-        else
-          {:status => :other, :code => response.code.to_i}
-        end
-      rescue Net::TimeoutError => e
-        {:status => :timeout}
-      rescue StandardError => e
-        {:status => :error}
       end
     end
           
