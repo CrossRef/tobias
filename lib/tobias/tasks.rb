@@ -123,7 +123,7 @@ module Tobias
     def self.perform
       sample_size = URL_CHUNK_SIZE * URL_SAMPLE_FREQ
       coll = Config.collection "citations"
-      query = {"url" => {"$exists" => true}}
+      query = {"url.root" => {"$exists" => true}} # only parsable urls
       ids = []
       
       coll.find(query, {:fields => ["_id"]}).each do |doc|
@@ -146,7 +146,7 @@ module Tobias
       coll = Config.collection "citations"
 
       ids.each do |id|
-        doc = coll.find({"_id" => id})
+        doc = coll.find_one(BSON::ObjectId.from_string(id))
         doc["url"]["status"] = URI(doc.url.full).status
         doc.save
       end
