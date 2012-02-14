@@ -9,6 +9,12 @@ require_relative "uri"
 
 module Tobias
 
+  RECORD_CHUNK_SIZE = 5000
+
+  URL_CHUNK_SIZE = 1000
+  
+  URL_SAMPLE_FREQ = 0.1
+
   class ConfigTask
     def self.before_perform_config(*args)
       Config.load!
@@ -40,7 +46,7 @@ module Tobias
       
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
         ids << grid.put(record_xml).to_s
-        if (ids.count % 5000).zero?
+        if (ids.count % RECORD_CHUNK_SIZE).zero?
           Resque.enqueue(ParseRecords, ids)
           ids = []
         end
@@ -100,9 +106,9 @@ module Tobias
             uri = URI(url)
             doc["url"] = {
               :full => url,
-              :tld => uri.tld,
-              :root => uri.root,
-              :sub => uri.sub
+              :tld => uri.tld.downcase,
+              :root => uri.root.downcase,
+              :sub => uri.sub.downcase
             }
           rescue StandardError => e
             doc["url"] = {:full => url}
@@ -112,6 +118,40 @@ module Tobias
       end
     end
   end
+
+  class EmitUrls < ConfigTask
+    def self.perform
+      sample_size = URL_CHUNK_SIZE * URL_SAMPLE_FREQ
+      coll = Config.collection "citations"
+      query = {"url" => {"$exists" => true}}
+      ids = []
+      
+      coll.find(query, {:fields => ["_id"]}).each do |doc|
+        ids << doc["_id"].to_s
+        
+        if (ids.count % URL_CHUNK_SIZE).zero?
+          Resque.enqueue(CheckUrls, ids.sample(sample_size))
+          ids = []
+        end
+      end
+      
+      Resque.enqueue(CheckUrls, ids.sample(ids.count * URL_SAMPLE_FREQ)) if not ids.empty?
+    end
+  end
+
+  class CheckUrls < ConfigTask
+    @queue = :urls
+    
+    def self.perform(ids)
+      coll = Config.collection "citations"
+
+      ids.each do |id|
+        doc = coll.find({"_id" => id})
+        doc["url"]["status"] = URI(doc.url.full).status
+        doc.save
+      end
+    end
+  end 
 
   def self.run_once task
     task.public_methods.reject {|n| !n.to_s.start_with? "before"}.each do |name|

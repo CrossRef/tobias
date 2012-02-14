@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "uri"
+require "net/http"
 
 module URI
   class Generic
@@ -61,6 +62,30 @@ module URI
         end
       end
     end
-    
+
+    # Returns one of :timeout, :other, :error  or :ok after attempts to
+    # resolve the URI. Will follow redirects.
+    def status limit=10, uri=self
+      begin
+        response = Net::HTTP.start(uri.host, uri.port) do |http|
+          request = Net::HTTP::Get.new uri.request_uri
+          http.request request
+        end
+
+        case response
+        when Net::HTTPSuccess then
+          {:status => :ok}
+        when Net::HTTPRedirection then
+          status(limit - 1, URI(response["Location"]))
+        else
+          {:status => :other, :code => response.code.to_i}
+        end
+      rescue Net::TimeoutError => e
+        {:status => :timeout}
+      rescue StandardError => e
+        {:status => :error}
+      end
+    end
+          
   end
 end

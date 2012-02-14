@@ -1,5 +1,7 @@
 var mapHostsF = function() {
-  emit(this.url.root, 1)
+  if (this.url.root !== undefined) {
+    emit(this.url.root, 1)
+  }
 }
 
 var reduceHostsF = function(key, vals) {
