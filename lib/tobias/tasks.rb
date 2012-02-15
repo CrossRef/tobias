@@ -147,8 +147,8 @@ module Tobias
 
       ids.each do |id|
         doc = coll.find_one(BSON::ObjectId.from_string(id))
-        doc["url"]["status"] = URI(doc.url.full).status
-        doc.save
+        doc["url"]["status"] = URI(doc["url"]["full"]).status
+        coll.save doc
       end
     end
   end 

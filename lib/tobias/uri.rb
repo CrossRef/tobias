@@ -63,7 +63,7 @@ module URI
       end
     end
 
-    # Returns one of :*_error, :other, :error  or :ok after attempts to
+    # Returns one of :http_error, :exception_error or :ok after attempts to
     # resolve the URI. Will follow redirects.
     def status limit=10, uri=self
       if limit.zero?
@@ -81,14 +81,10 @@ module URI
           when Net::HTTPRedirection then
             status(limit - 1, uri.merge(response["Location"]))
           else
-            {:status => :other, :code => response.code.to_i}
+            {:status => :http_error, :code => response.code.to_i}
           end
-        rescue SocketError => e
-          {:status => :socket_error}
-        rescue TimeoutError => e
-          {:status => :timeout_error}
         rescue StandardError => e
-          {:status => :error, :e => e}
+          {:status => :exception_error, :exception => e.to_s}
         end
       end
     end
