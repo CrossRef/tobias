@@ -1,8 +1,25 @@
 var mapF = function() {
-  var value = {cite_count: 1, other_count: 0, dx_count: 0, wiki_count: 0, ncbi_count: 0, ct_count: 0}
+  var value = {cite_count: 1, other_count: 0, dx_count: 0, 
+               wiki_count: 0, ncbi_count: 0, ct_count: 0,
+               parsed_count: 0, status_count: 0,
+               ok_count: 0, not_found_count: 0}
   var url = this.url
 
   if (url !== undefined) {
+    if (url.root !== undefined) {
+      value["parsed_count"] = 1
+    }
+
+    if (url.status !== undefined) {
+      value["status_count"] = 1
+
+      if (url.status.status === "ok") {
+        value["ok_count"] = 1
+      } else if (url.status.status === "http_error" && url.status.code === 404) {
+        value["not_found_count"] = 1
+      }
+    }
+
     if (url.tld === "org" && url.root === "doi" && url.sub === "dx") {
       value["dx_count"] = 1
     } else if (url.tld === "gov" && url.root === "nih" && url.sub === "www.ncbi.nlm") {
@@ -20,23 +37,18 @@ var mapF = function() {
 }
 
 var reduceF = function(key, vals) {
-  var citeSum = 0, otherSum = 0, dxSum = 0, wikiSum = 0, ncbiSum = 0, ctSum = 0
-
-  for (var i in vals) {
-    citeSum += vals[i]["cite_count"]
-    otherSum += vals[i]["other_count"]
-    dxSum += vals[i]["dx_count"]
-    wikiSum += vals[i]["wiki_count"]
-    ncbiSum += vals[i]["ncbi_count"]
-    ctSum += vals[i]["ct_count"]
-  }
+  var result = {}
   
-  return {cite_count: citeSum, 
-          other_count: otherSum, 
-          dx_count: dxSum,
-          wiki_count: wikiSum,
-          ncbi_count: ncbiSum,
-          ct_count: ctSum}
+  for (var i in vals) {
+    for (var k in vals[i]) {
+      if (result[k] === undefined) {
+        result[k] = 0
+      }
+      result[k] += vals[i][k]
+    }
+  }
+
+  return result
 }
 
 db.runCommand({
