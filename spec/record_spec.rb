@@ -24,7 +24,7 @@ describe Tobias::Oai::Record do
   end
 
   it "should report record doi data correctly" do
-    @record.doi.should == {
+    @record.citing_doi.should == {
       :doi =>"10.1504/IJIR.2008.019205",
       :resource => "http://www.inderscience.com/link.php?id=19205"
     }
@@ -35,7 +35,19 @@ describe Tobias::Oai::Record do
   end
 
   it "should report kind correctly" do
-    @record.kind.should == "journal_article"
+    @record.citing_kind.should == "journal_article"
+  end
+
+  it "should report dois and their type correctly" do
+    @record.dois.count.should == 1
+    @record.dois.first[:type].should == "journal_article"
+    @record.dois.first[:doi].should == "10.1504/IJIR.2008.019205"
+  end
+
+  it "should report titles in bibliographic records" do
+    @record.bibo_records.count.should == 1
+    @record.bibo_records.first[:published][:year].should == "2008"
+    @record.bibo_records.first[:contributors].count.should == 3
   end
 
 end

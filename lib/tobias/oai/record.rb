@@ -6,10 +6,11 @@ module Tobias
         "xmlns" => "http://www.crossref.org/xschema/1.0"
       }
 
-      # These kinds can have a DOI and a citation list.
+      # These kinds can have a citation list.
       @@citing_kinds = ["journal_article", "conference_paper", "book_metadata",
-                        "content_item", "dissertation", "report-paper_metadata",
-                        "standard_metadata", "dataset"]
+                        "book_series_metadata", "book_set_metadata", "content_item", 
+                        "dissertation", "report-paper_metadata", "series_metadata",
+                        "standard_metadata", "standard_series_metadata", "dataset"]
       
       def initialize record_node
         @record_node = record_node
@@ -68,13 +69,71 @@ module Tobias
       # - journal_article
       # - conference_paper
       # - book
-      # - content
+      # - book_series
+      # - book_set
+      # - content_item
       # - dissertation
       # - report_paper
+      # - series
       # - standard
+      # - standard_series
       # - dataset
       def citing_kind
-        @citing_node.name.sub(/_metadata\Z/, "").gsub(/-/, "_")
+        normalise_work_name @citing_node.name
+      end
+
+      # Returns all DOIs in the record and the item node they belong to.
+      def dois
+        @dois ||= @record_node.css("doi_data", @@ns).map do |doi_node|
+          {
+            :doi => doi_node.at_css("doi", @@ns).text,
+            :parent => doi_node.parent,
+            :type => normalise_work_name(doi_node.parent.name)
+          }
+        end
+      end
+
+      # Return a record of bibliographic metadata for each DOI in this record.
+      def bibo_records
+        @bibo_records ||= dois.map do |doi_info|
+          {
+            :doi => doi_info[:doi],
+            :type => doi_info[:type],
+            :title => doi_info[:parent].at_css("title", @@ns).text,
+            :contributors => contributors(doi_info[:parent]),
+            :published => published(doi_info[:parent])
+          }
+        end
+      end
+
+      private
+
+      def children_to_hash parent
+        hsh = {}
+        parent.children.each do |child|
+          hsh[child.name.to_sym] = child.text
+        end
+        hsh
+      end
+
+      def normalise_work_name name
+        name.sub(/_metadata\Z/, "").gsub(/-/, "_")
+      end
+
+      def contributors parent_node
+        contributors_node = parent_node.at_css("contributors", @@ns)
+        if not contributors_node.nil?
+          contributors_node.css("person_name", @@ns).map do |person_node|
+            children_to_hash person_node
+          end
+        end
+      end
+
+      def published parent_node
+        pub_date_node = parent_node.at_css("publication_date", @@ns)
+        if not pub_date_node.nil?
+          children_to_hash pub_date_node
+        end
       end
 
     end

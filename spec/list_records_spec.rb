@@ -20,7 +20,7 @@ describe Tobias::Oai::ListRecords do
   it "should successfully parse extracted record elements" do
     Tobias::Oai::ListRecords.new(File.new(@filename)).each_record do |xml|
       record = Tobias::Oai::Record.new(Nokogiri::XML(xml))
-      record.doi.should have(2).things
+      record.citing_doi.should have(2).things
       record.header.should have(3).things
     end
   end
