@@ -28,10 +28,10 @@ module Tobias
   class DispatchDirectory
     @queue = :directories
 
-    def self.perform(directory_name)
+    def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
         if filename.end_with? ".xml"
-          Resque.enqueue(SplitRecordList, File.join(directory_name, filename))
+          Resque.enqueue(SplitRecordList, File.join(directory_name, filename), action)
         end
       end
     end
@@ -40,7 +40,7 @@ module Tobias
   class SplitRecordList < ConfigTask
     @queue = :files
 
-    def self.perform(filename)
+    def self.perform(filename, action)
       grid = Config.grid
       ids = []
       
@@ -52,36 +52,43 @@ module Tobias
         end
       end
 
-      Resque.enqueue(ParseRecords, ids) unless ids.empty?
+      Resque.enqueue(ParseRecords, ids, action) unless ids.empty?
     end
   end
 
   class ParseRecords < ConfigTask
     @queue = :records
 
-    def self.perform(ids)
+    def self.perform(ids, action)
       grid = Config.grid
-      coll = Config.collection "citations"
+      coll = Config.collection action.to_s
       docs = []
 
       ids.each do |id|
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
         
-        docs = record.citations.map do |citation|
-          {
-            :from => record.citing_doi,
-            :to => citation,
-            :context => {
-              :header => record.header,
-              :publication_date => record.publication_date,
-              :kind => record.citing_kind
+        if action == :citations
+          docs = record.citations.map do |citation|
+            {
+              :from => record.citing_doi,
+              :to => citation,
+              :context => {
+                :header => record.header,
+                :publication_date => record.publication_date,
+                :kind => record.citing_kind
+              }
             }
-          }
+          end
+          
+          coll.insert(docs)
+          grid.delete(oid)
+        elsif action == :dois
+          record.bibo_records.each do |bibo_record|
+            coll.update({"doi" => bibo_record[:doi]}, bibo_record, {:upsert => true})
+          end
         end
 
-        coll.insert(docs)
-        grid.delete(oid)
       end
     end
   end

@@ -20,7 +20,7 @@ end
 desc "Queue a directory of XML files for parsing"
 task :queue_dir do
   require_relative "lib/tobias/runner"
-  Tobias::Runner.new(ENV["DIR"] || "/data/crossref-citations")
+  Tobias::Runner.new(ENV["DIR"] || "/data/crossref-citations", ENV["ACTION"] || "citations")
 end
 
 task :parse_urls do

@@ -6,7 +6,7 @@ module Tobias
 
   class Runner
 
-    def initialize dir_name
+    def initialize dir_name, action
       Config.load!
 
       coll = Config.collection "citations"
@@ -15,7 +15,7 @@ module Tobias
 
       Config.shutdown!
 
-      Resque.enqueue(DispatchDirectory, dir_name)
+      Resque.enqueue(DispatchDirectory, dir_name, action.to_sym)
     end
 
   end
