@@ -98,9 +98,7 @@ module Tobias
         @bibo_records ||= dois.map do |doi_info|
           record_base = {
             :doi => doi_info[:doi],
-            :type => doi_info[:type],
-            :contributors => contributors(doi_info[:parent]),
-            :published => published(doi_info[:parent])
+            :type => doi_info[:type]
           }
 
           contributors = contributors doi_info[:parent]
