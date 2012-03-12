@@ -9,9 +9,12 @@ module Tobias
     def initialize dir_name, action
       Config.load!
 
-      coll = Config.collection "citations"
-      coll.create_index "from.doi"
-      coll.create_index "to.doi"
+      citation_coll = Config.collection "citations"
+      citation_coll.create_index "from.doi"
+      citation_coll.create_index "to.doi"
+
+      doi_coll = Config.collection "dois"
+      doi_coll.create_index "doi"
 
       Config.shutdown!
 
