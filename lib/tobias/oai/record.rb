@@ -99,10 +99,14 @@ module Tobias
           record_base = {
             :doi => doi_info[:doi],
             :type => doi_info[:type],
-            :title => doi_info[:parent].at_css("title", @@ns).text,
             :contributors => contributors(doi_info[:parent]),
             :published => published(doi_info[:parent])
           }
+
+          title_node = doi_info[:parent].at_css("title", @@ns)
+          if not title_node.nil?
+            record_base[:title] = title_node.text
+          end
 
           if doi_info[:type] == "journal_article" ||
               doi_info[:type] == "conference_paper"
