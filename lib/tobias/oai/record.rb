@@ -103,10 +103,14 @@ module Tobias
             :published => published(doi_info[:parent])
           }
 
+          contributors = contributors doi_info[:parent]
+          record_base[:contributors] = contributors if not contributors.nil?
+
+          published = published doi_info[:parent]
+          record_base[:published] = published if not published.nil?
+
           title_node = doi_info[:parent].at_css("title", @@ns)
-          if not title_node.nil?
-            record_base[:title] = title_node.text
-          end
+          record_base[:title] = title_node.text if not title_node.nil?
 
           if doi_info[:type] == "journal_article" ||
               doi_info[:type] == "conference_paper"
@@ -141,11 +145,19 @@ module Tobias
         journal = children_to_hash metadata_node, [:issn]
 
         metadata_node.css("issn", @@ns).each do |issn_node|
-          if issn_node.attributes["media_type"].value == "print"
+          media_type = issn_node.attributes["media_type"]
+          
+          if !media_type.nil? && media_type.value == "print"
             journal[:p_issn] = issn_node.text
-          elsif issn_node.attributes["media_type"].value == "electronic"
+          elsif !media_type.nil? && media_type.value == "electronic"
             journal[:e_issn] = issn_node.text
+          else
+            journal[:issn] = issn_node.text
           end
+        end
+
+        if not journal.key?(:issn)
+          journal[:issn] = journal[:p_issn] || journal[:e_issn]
         end
 
         journal

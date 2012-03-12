@@ -56,6 +56,7 @@ describe Tobias::Oai::Record do
     journal[:abbrev_title].should == "IJIR"
     journal[:p_issn].should == "1746-6962"
     journal[:e_issn].should == "1746-6970"
+    journal[:issn].should == "1746-6962"
   end
 
 end

@@ -47,7 +47,7 @@ module Tobias
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
         ids << grid.put(record_xml).to_s
         if (ids.count % RECORD_CHUNK_SIZE).zero?
-          Resque.enqueue(ParseRecords, ids)
+          Resque.enqueue(ParseRecords, ids, action)
           ids = []
         end
       end
