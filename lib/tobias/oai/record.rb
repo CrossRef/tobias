@@ -96,28 +96,55 @@ module Tobias
       # Return a record of bibliographic metadata for each DOI in this record.
       def bibo_records
         @bibo_records ||= dois.map do |doi_info|
-          {
+          record_base = {
             :doi => doi_info[:doi],
             :type => doi_info[:type],
             :title => doi_info[:parent].at_css("title", @@ns).text,
             :contributors => contributors(doi_info[:parent]),
             :published => published(doi_info[:parent])
           }
+
+          if doi_info[:type] == "journal_article" ||
+              doi_info[:type] == "conference_paper"
+            journal_node = doi_info[:parent].parent
+            record_base[:journal] = journal(journal_node)
+          end
+
+          record_base
         end
       end
 
       private
 
-      def children_to_hash parent
+      def children_to_hash parent, ignore=[]
+        ignore << :text
         hsh = {}
         parent.children.each do |child|
-          hsh[child.name.to_sym] = child.text
+          key = child.name.to_sym
+          if not ignore.member? key 
+            hsh[key] = child.text
+          end
         end
         hsh
       end
 
       def normalise_work_name name
         name.sub(/_metadata\Z/, "").gsub(/-/, "_")
+      end
+
+      def journal journal_node
+        metadata_node = journal_node.at_css "journal_metadata", @@ns
+        journal = children_to_hash metadata_node, [:issn]
+
+        metadata_node.css("issn", @@ns).each do |issn_node|
+          if issn_node.attributes["media_type"].value == "print"
+            journal[:p_issn] = issn_node.text
+          elsif issn_node.attributes["media_type"].value == "electronic"
+            journal[:e_issn] = issn_node.text
+          end
+        end
+
+        journal
       end
 
       def contributors parent_node
