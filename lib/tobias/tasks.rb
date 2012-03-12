@@ -68,7 +68,7 @@ module Tobias
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
         
-        if action == :citations
+        if action == "citations"
           docs = record.citations.map do |citation|
             {
               :from => record.citing_doi,
@@ -83,7 +83,7 @@ module Tobias
           
           coll.insert(docs)
           grid.delete(oid)
-        elsif action == :dois
+        elsif action == "dois"
           record.bibo_records.each do |bibo_record|
             coll.update({"doi" => bibo_record[:doi]}, bibo_record, {:upsert => true})
           end

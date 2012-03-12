@@ -18,7 +18,7 @@ module Tobias
 
       Config.shutdown!
 
-      Resque.enqueue(DispatchDirectory, dir_name, action.to_sym)
+      Resque.enqueue(DispatchDirectory, dir_name, action)
     end
 
   end
