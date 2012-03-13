@@ -142,13 +142,13 @@ module Tobias
       end
 
       def conj_volume record, journal_node
-        volume_node = journal_node.at_css("journal_volume", @@ns)
-        record[:volume] = volume_node.at_css("volume", @@ns).text if not volume_node.nil?
+        volume_node = journal_node.at_css("volume", @@ns)
+        record[:volume] = volume_node.text if not volume_node.nil?
       end
 
       def conj_issue record, journal_node
-        issue_node = journal_node.at_css("journal_issue", @@ns)
-        record[:issue] = issue_node.at_css("issue", @@ns).text if not issue_node.nil?
+        issue_node = journal_node.at_css("issue", @@ns)
+        record[:issue] = issue_node.text if not issue_node.nil?
       end
 
       def journal journal_node
