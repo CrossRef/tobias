@@ -50,13 +50,21 @@ describe Tobias::Oai::Record do
     @record.bibo_records.first[:contributors].count.should == 3
   end
 
-  it "should report correct journal details" do
+  it "should report correct journal metadata details" do
     journal = @record.bibo_records.first[:journal]
     journal[:full_title].should == "International Journal of Inventory Research"
     journal[:abbrev_title].should == "IJIR"
     journal[:p_issn].should == "1746-6962"
     journal[:e_issn].should == "1746-6970"
     journal[:issn].should == "1746-6962"
+  end
+
+  it "should report correct journal issue details" do
+    @record.bibo_records.first[:issue].should == "1"
+  end
+
+  it "should report correct journal volume details" do
+    @record.bibo_records.first[:volume].should == "1"
   end
 
 end

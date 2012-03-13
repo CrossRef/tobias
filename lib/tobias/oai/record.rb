@@ -114,6 +114,9 @@ module Tobias
               doi_info[:type] == "conference_paper"
             journal_node = doi_info[:parent].parent
             record_base[:journal] = journal(journal_node)
+
+            conj_issue(record_base, journal_node)
+            conj_volume(record_base, journal_node)
           end
 
           record_base
@@ -136,6 +139,16 @@ module Tobias
 
       def normalise_work_name name
         name.sub(/_metadata\Z/, "").gsub(/-/, "_")
+      end
+
+      def conj_volume record, journal_node
+        volume_node = journal_node.at_css("journal_volume", @@ns)
+        record[:volume] = volume_node.at_css("volume", @@ns).text if not volume_node.nil?
+      end
+
+      def conj_issue record, journal_node
+        issue_node = journal_node.at_css("journal_issue", @@ns)
+        record[:issue] = issue_node.at_css("issue", @@ns).text if not issue_node.nil?
       end
 
       def journal journal_node
