@@ -23,4 +23,6 @@
     <field name="doi" type="string" indexed="false" stored="true" required="true"/>
     <field name="content" type="text" indexed="true" stored="false" required="true"/>
   </fields>
+
+  <defaultSearchField>content</defaultSearchField>
 </schema>
