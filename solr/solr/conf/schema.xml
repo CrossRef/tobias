@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="example" version="1.4">
+  <types>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+	<charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
+	<charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+	<tokenizer class="solr.StandardTokenizerFactory"/>
+	<filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+	<charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
+	<charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+	<tokenizer class="solr.StandardTokenizerFactory"/>
+	<filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+  </types>
+
+  <fields>
+    <field name="doi" type="string" indexed="false" stored="true" required="true"/>
+    <field name="content" type="text" indexed="true" stored="false" required="true"/>
+  </fields>
+</schema>
