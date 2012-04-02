@@ -119,6 +119,12 @@ module Tobias
             conj_volume(record_base, journal_node)
           end
 
+          if doi_info[:type] == "journal_article" ||
+              doi_info[:type] == "conference_paper" ||
+              doi_info[:type] == "content_item"
+            conj_pages(record_base, journal_node)
+          end
+
           record_base
         end
       end
@@ -149,6 +155,11 @@ module Tobias
       def conj_issue record, journal_node
         issue_node = journal_node.at_css("issue", @@ns)
         record[:issue] = issue_node.text if not issue_node.nil?
+      end
+
+      def conj_pages record, journal_node
+        pages_node = journal_node.at_css("pages", @@ns)
+        record[:pages] = children_to_hash(pages_node) if not pages_node.nil?
       end
 
       def journal journal_node

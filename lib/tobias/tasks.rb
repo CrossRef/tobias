@@ -172,5 +172,62 @@ module Tobias
     end
   end
 
+  class UpdateSolr < ConfigTask
+    def self.initials given_name
+      given_name.split(/[\s\-]+/).map { |name| name[0] }.join(" ")
+    end
+
+    def self.to_solr_content doc
+      index_str = ""
+
+      if doc["published"]
+        index_str << doc["published"]["year"] if doc["published"]["year"]
+      end
+
+      index_str << " " + doc["title"] if doc["title"]
+
+      if doc["journal"]
+        index_str << " " + doc["journal"]["full_title"] if doc["journal"]["full_title"]
+        index_str << " " + doc["jorunal"]["abbrev_title"] if doc["journal"]["abbrev_title"]
+      end
+      
+      index_str << " " + doc["issue"] if doc["issue"]
+      index_str << " " + doc["volume"] if doc["volume"]
+
+      if doc["pages"]
+        index_str << " " + doc["pages"]["first"] if doc["pages"]["first"]
+        index_str << " " + doc["pages"]["last"] if doc["pages"]["last"]
+      end
+
+      if doc["contributors"]
+        doc["contributors"].each do |c|
+          index_str << " " + initials(c["given_name"]) if c["given_name"]
+          index_str << " " + c["surname"] if c["surname"]
+        end
+      end
+
+      index_str
+    end
+
+    def self.perform
+      
+      coll = Config.collection "dois"
+      solr_docs = []
+
+      coll.find().each do |doc|
+        solr_docs << {
+          :doi => doc["doi"],
+          :content => to_solr_content(doc)
+        }
+
+        if solr_docs.count % 1000 == 0
+          Config.solr.add solr_docs
+          solr_docs = []
+        end
+      end
+
+    end
+  end
+
 end
 
