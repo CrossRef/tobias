@@ -25,4 +25,5 @@
   </fields>
 
   <defaultSearchField>content</defaultSearchField>
+  <uniqueKey>doi</uniqueKey>
 </schema>
