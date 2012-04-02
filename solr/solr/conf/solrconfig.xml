@@ -398,7 +398,9 @@
 
   <queryResponseWriter name="json" class="solr.JSONResponseWriter">
   </queryResponseWriter>
-  
+
+  <queryResponseWriter name="ruby" class="solr.RubyResponseWriter">
+  </queryResponseWriter>
 
   <!-- Legacy config for the admin interface -->
   <admin>
