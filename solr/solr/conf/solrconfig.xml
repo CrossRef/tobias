@@ -377,6 +377,9 @@
   <requestHandler name="/admin/" 
                   class="solr.admin.AdminHandlers" />
 
+  <requestHandler name="/update" class="solr.XmlUpdateRequestHandler">
+  </requestHandler>
+
   <!-- ping/healthcheck -->
   <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
     <lst name="invariants">
