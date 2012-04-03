@@ -1,0 +1,78 @@
+<record xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata>
+    <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://www.crossref.org/schema/unixref1.0.xsd">
+      <conference>
+	<event_metadata>
+	  <conference_name>2010 IEEE 18th International Workshop on Quality of Service (IWQoS)</conference_name>
+	  <conference_location>Beijing, China</conference_location>
+	  <conference_date start_month="06" start_year="2010" start_day="16" end_month="06" end_year="2010" end_day="18" />
+	</event_metadata>
+	<proceedings_metadata>
+	  <proceedings_title>2010 IEEE 18th International Workshop on Quality of Service (IWQoS)</proceedings_title>
+	  <publisher>
+	    <publisher_name>IEEE</publisher_name>
+	  </publisher>
+	  <publication_date>
+	    <month>06</month>
+	    <year>2010</year>
+	  </publication_date>
+	  <isbn media_type="print">978-1-4244-5987-2</isbn>
+	</proceedings_metadata>
+	<conference_paper>
+	  <contributors>
+	    <person_name sequence="first" contributor_role="author">
+	      <given_name>ShaoJie</given_name>
+	      <surname>Tang</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>Jing</given_name>
+	      <surname>Yuan</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>XiangYang</given_name>
+	      <surname>Li</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>Yunhao</given_name>
+	      <surname>Liu</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>GuiHai</given_name>
+	      <surname>Chen</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>Ming</given_name>
+	      <surname>Gu</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>JiZhong</given_name>
+	      <surname>Zhao</surname>
+	    </person_name>
+	    <person_name sequence="additional" contributor_role="author">
+	      <given_name>Guojun</given_name>
+	      <surname>Dai</surname>
+	    </person_name>
+	  </contributors>
+	  <titles>
+	    <title><![CDATA[DAWN: Energy efficient data aggregation in WSN with mobile sinks]]></title>
+	  </titles>
+	  <publication_date>
+	    <month>06</month>
+	    <year>2010</year>
+	  </publication_date>
+	  <pages>
+	    <first_page>1</first_page>
+	    <last_page>9</last_page>
+	  </pages>
+	  <publisher_item>
+	    <item_number item_number_type="arNumber">5542765</item_number>
+	  </publisher_item>
+	  <doi_data>
+	    <doi>10.1109/IWQoS.2010.5542765</doi>
+	    <resource>http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=5542765</resource>
+	  </doi_data>
+	</conference_paper>
+      </conference>
+    </crossref>
+  </metadata>
+</record>
