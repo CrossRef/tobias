@@ -190,6 +190,10 @@ module Tobias
         index_str << " " + doc["journal"]["full_title"] if doc["journal"]["full_title"]
         index_str << " " + doc["jorunal"]["abbrev_title"] if doc["journal"]["abbrev_title"]
       end
+
+      if doc["proceedings"]
+        index_str << " " + doc["proceedings"]["title"] if doc["proceedings"]["title"]
+      end
       
       index_str << " " + doc["issue"] if doc["issue"]
       index_str << " " + doc["volume"] if doc["volume"]
@@ -215,14 +219,16 @@ module Tobias
       solr_docs = []
 
       coll.find().each do |doc|
-        solr_docs << {
-          :doi => doc["doi"],
-          :content => to_solr_content(doc)
-        }
+        if ["journal_article", "conference_paper"].include? doc["type"]
+          solr_docs << {
+            :doi => doc["doi"],
+            :content => to_solr_content(doc)
+          }
 
-        if solr_docs.count % 1000 == 0
-          Config.solr.add solr_docs
-          solr_docs = []
+          if solr_docs.count % 1000 == 0
+            Config.solr.add solr_docs
+            solr_docs = []
+          end
         end
       end
 

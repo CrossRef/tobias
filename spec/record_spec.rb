@@ -5,10 +5,15 @@ require_relative "../lib/tobias/oai/record"
 
 describe Tobias::Oai::Record do
 
+  def load_record filename
+    path = File.join(File.dirname(__FILE__), "..", "data", filename)
+    xml = File.open(path, "rb") { |f| f.read }
+    Tobias::Oai::Record.new Nokogiri::XML(xml)
+  end
+
   before do
-    @filename = File.join(File.dirname(__FILE__), "..", "data", "record.xml")
-    @xml = File.open(@filename, "rb") { |f| f.read }
-    @record = Tobias::Oai::Record.new Nokogiri::XML(@xml)
+    @record = load_record("record.xml")
+    @conf_record = load_record("record_cp.xml")
   end
 
   it "should report header information correctly" do
@@ -65,6 +70,21 @@ describe Tobias::Oai::Record do
 
   it "should report correct journal volume details" do
     @record.bibo_records.first[:volume].should == "1"
+  end
+
+  it "should report authors for conference papers" do
+    @conf_record.bibo_records.first[:contributors].count.should == 8
+  end
+
+  it "should report proceedings data for conference papers" do
+    paper = @conf_record.bibo_records.first
+    paper[:proceedings][:title].should == "2010 IEEE 18th International Workshop on Quality of Service (IWQoS)"
+  end
+
+  it "should report pages correctly" do
+    @conf_record.bibo_records.first[:pages][:first_page].should == "1"
+    @conf_record.bibo_records.first[:pages][:last_page].should == "9"
+    @record.bibo_records.first[:pages][:first_page].should == "1"
   end
 
 end
