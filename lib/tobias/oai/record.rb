@@ -8,10 +8,10 @@ module Tobias
 
       # These kinds can have a citation list.
       @@citing_kinds = ["journal_article", "conference_paper", "book_metadata",
-                        "book_series_metadata", "book_set_metadata", "content_item", 
+                        "book_series_metadata", "book_set_metadata", "content_item",
                         "dissertation", "report-paper_metadata", "series_metadata",
                         "standard_metadata", "standard_series_metadata", "dataset"]
-      
+
       def initialize record_node
         @record_node = record_node
         matches = @@citing_kinds.map { |kind| @record_node.at_css(kind, @@ns) }
@@ -28,14 +28,22 @@ module Tobias
 
       # Returns the citing DOI, if any.
       def citing_doi
-	if @citing_node.nil?
-	  {}
-	else
-          @doi ||= {
-            :doi => @citing_node.at_css("doi_data doi", @@ns).text,
-            :resource => @citing_node.at_css("doi_data resource", @@ns).text
-          }
-	end
+        return @doi unless @doi.nil?
+
+        unless @citing_node.nil?
+          doi_node = @citing_node.at_css "doi_data doi", @@ns
+          resource_node = @citing_node.at_css "doi_data resource", @@ns
+
+          unless doi_node.nil? || resource_node.nil?
+            @doi = {
+              :doi => doi_node.text,
+              :resource => resource_node.text
+            }
+          end
+        end
+
+        @doi = {} if @doi.nil?
+        @doi
       end
 
       def publication_date
@@ -120,7 +128,7 @@ module Tobias
         hsh = {}
         parent.children.each do |child|
           key = child.name.to_sym
-          if not ignore.member? key 
+          if not ignore.member? key
             hsh[key] = child.text
           end
         end
@@ -147,7 +155,7 @@ module Tobias
       end
 
       def conj_contributors record, parent_node
-        with_child parent_node, "contributors" do |contributors_node| 
+        with_child parent_node, "contributors" do |contributors_node|
           record[:contributors] = contributors_node.css("person_name", @@ns).map do |person_node|
             children_to_hash person_node
           end
@@ -190,10 +198,10 @@ module Tobias
       def conj_journal record, journal_node
         with_child journal_node, "journal_metadata" do |metadata_node|
           journal = children_to_hash metadata_node, [:issn]
-          
+
           metadata_node.css("issn", @@ns).each do |issn_node|
             media_type = issn_node.attributes["media_type"]
-            
+
             if !media_type.nil? && media_type.value == "print"
               journal[:p_issn] = issn_node.text
             elsif !media_type.nil? && media_type.value == "electronic"

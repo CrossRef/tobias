@@ -2,22 +2,50 @@
 
   $ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
   $ sudo echo "deb
-      http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist
+  http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist
       10gen"
       >> /etc/apt/sources.list
   $ sudo apt-get update 
   $ sudo apt-get install mongodb-10gen
 
 * MongoDB Config
-** For local machines with SSD on /data:
-   dbpath=/data/mongodb
-** For cloud?
+** For local machines with data on /data2:
+   dbpath=/data2/mongodb
+   shardsvr=true
+   port=27001
+   etc
 
-* MongoDB Start / Stop
+* Run many shard servers with:
+  sudo -u mongodb mongod -f /etc/mongodb.conf
 
-  Use upstart
-  $ sudo service mongodb start
+* Run one or more MongoDB config servers with:
+  sudo -u mongodb mongod --configsvr --dbpath=/data2/mongodb-config --logpath=/var/log/mongodb/mongodb-config.log --port 27019
 
+* Run one or more Mongos servers with:
+  sudo -u mongodb mongos --configdb 192.168.1.151:27019
+   mentioning each config server
+
+* Configure sharding
+  - Connect to a mongos and switch to admin db
+  db.runCommand({addShard: "192.168.1.151:27001"})
+  db.runCommand({addShard: "192.168.1.152:27001"})
+  db.runCommand({enableSharding: "crossref"})
+  db.runCommand({shardCollection: "crossref.citations", key: {"from.doi": 1}})
+  db.runCommand({shardCollection: "crossref.dois", key: {"doi": 1}})
+ 
+  etc...
+
+* Current config
+** habanero
+   One shard mongod running on 27001
+   One mongos router running on 27018
+   
+   Client connections go to mongos router
+** chipotle
+   One shard mongod running on 27001
+   One mongod config server running on 27019
+    
+    
 * Redis
 
   $ wget http://redis.googlecode.com/files/redis-2.4.6.tar.gz
