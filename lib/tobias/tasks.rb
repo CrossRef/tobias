@@ -227,7 +227,7 @@ module Tobias
             :content => to_solr_content(doc)
           }
 
-          if solr_docs.count % 2000 == 0
+          if solr_docs.count % 1000 == 0
             Config.solr.add solr_docs
             Config.solr.update :data => "<commit/>"
             solr_docs = []

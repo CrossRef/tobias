@@ -38,3 +38,8 @@ task :solr do
   require_relative "lib/tobias/tasks"
   Tobias.run_once Tobias::UpdateSolr
 end
+
+task :resolve do
+  require_relative "lib/tobias/tasks"
+  Tobias.run_once Tobias::ResolveCitations
+end
