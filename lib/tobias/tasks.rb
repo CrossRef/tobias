@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 require "resque"
 require "mongo"
 require "nokogiri"
-require "pp"
+require "json"
 require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
@@ -12,8 +13,20 @@ module Tobias
   RECORD_CHUNK_SIZE = 5000
 
   URL_CHUNK_SIZE = 1000
-  
+
   URL_SAMPLE_FREQ = 0.1
+
+  def self.run_once task
+    task.public_methods.reject {|n| !n.to_s.start_with? "before"}.each do |name|
+      task.public_method(name).call
+    end
+
+    task.public_method(:perform).call
+
+    task.public_methods.reject {|n| !n.to_s.start_with? "after"}.each do |name|
+      task.public_method(name).call
+    end
+  end
 
   class ConfigTask
     def self.before_perform_config(*args)
@@ -43,7 +56,7 @@ module Tobias
     def self.perform(filename, action)
       grid = Config.grid
       ids = []
-      
+
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
         ids << grid.put(record_xml).to_s
         if (ids.count % RECORD_CHUNK_SIZE).zero?
@@ -67,7 +80,7 @@ module Tobias
       ids.each do |id|
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
-        
+
         if action == "citations"
           docs = record.citations.map do |citation|
             {
@@ -80,7 +93,7 @@ module Tobias
               }
             }
           end
-          
+
           coll.insert(docs)
           grid.delete(oid)
         elsif action == "dois"
@@ -132,23 +145,23 @@ module Tobias
       coll = Config.collection "citations"
       query = {"url.root" => {"$exists" => true}} # only parsable urls
       ids = []
-      
+
       coll.find(query, {:fields => ["_id"]}).each do |doc|
         ids << doc["_id"].to_s
-        
+
         if (ids.count % URL_CHUNK_SIZE).zero?
           Resque.enqueue(CheckUrls, ids.sample(sample_size))
           ids = []
         end
       end
-      
+
       Resque.enqueue(CheckUrls, ids.sample(ids.count * URL_SAMPLE_FREQ)) if not ids.empty?
     end
   end
 
   class CheckUrls < ConfigTask
     @queue = :urls
-    
+
     def self.perform(ids)
       coll = Config.collection "citations"
 
@@ -157,18 +170,6 @@ module Tobias
         doc["url"]["status"] = URI(doc["url"]["full"]).status
         coll.save doc
       end
-    end
-  end 
-
-  def self.run_once task
-    task.public_methods.reject {|n| !n.to_s.start_with? "before"}.each do |name|
-      task.public_method(name).call
-    end
-
-    task.public_method(:perform).call
-
-    task.public_methods.reject {|n| !n.to_s.start_with? "after"}.each do |name|
-      task.public_method(name).call
     end
   end
 
@@ -194,7 +195,7 @@ module Tobias
       if doc["proceedings"]
         index_str << " " + doc["proceedings"]["title"] if doc["proceedings"]["title"]
       end
-      
+
       index_str << " " + doc["issue"] if doc["issue"]
       index_str << " " + doc["volume"] if doc["volume"]
 
@@ -214,7 +215,7 @@ module Tobias
     end
 
     def self.perform
-      
+
       coll = Config.collection "dois"
       solr_docs = []
 
@@ -233,6 +234,80 @@ module Tobias
       end
 
     end
+  end
+
+  class ResolveCitations < ConfigTask
+
+    def self.match? response
+      docs = response["response"]["docs"]
+
+      if docs.count < 2
+        true
+      else
+        threshold = docs.map { |d| d["score"] }.drop(1).take(2).reduce(0) {|memo, val| memo += val} * 0.8
+        docs.first["score"] >= threshold
+
+        # docs.first["score"] > 1 && docs.first["score"] >= (docs[1]["score"] * 1.5)
+      end
+    end
+
+    def self.correct? response, citation
+      docs = response["response"]["docs"]
+
+      if docs.empty?
+        false
+      else
+        response["response"]["docs"].first["doi"] == citation["to"]["doi"]
+      end
+    end
+
+    def self.perform
+      coll = Config.collection "citations"
+      query = {"$and" => [{"to.doi" => {"$exists" => true}}, {"to.unstructured_citation" => {"$exists" => true}}]}
+      results = {:good_match => 0, :bad_match => 0, :no_match => 0}
+
+      coll.find(query).each do |citation|
+        # If the citation has an unstructured_citation we construct a query
+        # using it. Otherwise, we query using a concatenation of all structured
+        # query parts, unless there are none, in which case we ignore the citation.
+        query = ""
+
+        if citation["to"].key?("unstructured_citation")
+          query << citation["to"]["unstructured_citation"]
+        # else
+        #   citation_parts = citation["to"].reject do |name, _|
+        #     ["doi", "key", "issn", "isbn"].include?(name)
+        #   end
+
+        #   query = citation_parts.values.reduce("") { |memo, val| memo << " " + val }
+        # end
+
+        # if not query.empty?
+          # Remove characters that are meaningful in solr query strings.
+          query = query.gsub(/[():]/, " ")
+
+          response = Config.solr.get "select", :params => {
+            :q => query,
+            :fl => "*,score",
+            :rows => 10
+          }
+
+          if not match?(response)
+            results[:no_match] = results[:no_match].next
+            puts "no match: " + query
+          elsif correct?(response, citation)
+            results[:good_match] = results[:good_match].next
+            puts "good match: " + query
+          else
+            results[:bad_match] = results[:bad_match].next
+            puts "bad match: " + query
+          end
+        end
+      end
+
+      jj results
+    end
+
   end
 
 end
