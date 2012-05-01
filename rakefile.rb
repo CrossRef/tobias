@@ -33,3 +33,8 @@ task :emit_urls do
   require_relative "lib/tobias/tasks"
   Tobias.run_once Tobias::EmitUrls
 end
+
+task :solr do
+  require_relative "lib/tobias/tasks"
+  Tobias.run_once Tobias::UpdateSolr
+end

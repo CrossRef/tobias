@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 require "resque"
 require "mongo"
 require "nokogiri"
@@ -179,6 +178,8 @@ module Tobias
     end
 
     def self.to_solr_content doc
+      # TODO Remove duplicate words?
+
       index_str = ""
 
       if doc["published"]
@@ -189,7 +190,7 @@ module Tobias
 
       if doc["journal"]
         index_str << " " + doc["journal"]["full_title"] if doc["journal"]["full_title"]
-        index_str << " " + doc["jorunal"]["abbrev_title"] if doc["journal"]["abbrev_title"]
+        index_str << " " + doc["journal"]["abbrev_title"] if doc["journal"]["abbrev_title"]
       end
 
       if doc["proceedings"]
@@ -226,11 +227,17 @@ module Tobias
             :content => to_solr_content(doc)
           }
 
-          if solr_docs.count % 1000 == 0
+          if solr_docs.count % 2000 == 0
             Config.solr.add solr_docs
+            Config.solr.update :data => "<commit/>"
             solr_docs = []
           end
         end
+      end
+
+      if not solr_docs.empty?
+        Config.solr.add solr_docs
+        Config.solr.update :data => "<commit/>"
       end
 
     end
