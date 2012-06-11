@@ -43,3 +43,13 @@ task :resolve do
   require_relative "lib/tobias/tasks"
   Tobias.run_once Tobias::ResolveCitations
 end
+
+task :categories do
+  require_relative 'lib/tobias/tasks'
+  Tobias.run_once Tobias::InjestCategories, ENV['FILE']
+end
+
+task :category_names do
+  require_relative 'lib/tobias/tasks'
+  Tobias.run_once Tobias::InjestCategoryNames, ENV['FILE']
+end

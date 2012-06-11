@@ -1,7 +1,6 @@
 require "json"
 require "mongo"
 require "resque"
-require "rsolr"
 
 module Tobias
 
@@ -30,10 +29,6 @@ module Tobias
 
     def self.grid
       @@grid ||= Mongo::Grid.new(mongo[@@config["mongo-name"]])
-    end
-
-    def self.solr
-      @@solr ||= RSolr.connect :url => @@config["solr-server"]
     end
 
     def self.shutdown!

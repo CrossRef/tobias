@@ -8,10 +8,10 @@ module Tobias
 
       # These kinds can have a citation list.
       @@citing_kinds = ["journal_article", "conference_paper", "book_metadata",
-                        "book_series_metadata", "book_set_metadata", "content_item",
+                        "book_series_metadata", "book_set_metadata", "content_item", 
                         "dissertation", "report-paper_metadata", "series_metadata",
                         "standard_metadata", "standard_series_metadata", "dataset"]
-
+      
       def initialize record_node
         @record_node = record_node
         matches = @@citing_kinds.map { |kind| @record_node.at_css(kind, @@ns) }
@@ -28,22 +28,14 @@ module Tobias
 
       # Returns the citing DOI, if any.
       def citing_doi
-        return @doi unless @doi.nil?
-
-        unless @citing_node.nil?
-          doi_node = @citing_node.at_css "doi_data doi", @@ns
-          resource_node = @citing_node.at_css "doi_data resource", @@ns
-
-          unless doi_node.nil? || resource_node.nil?
-            @doi = {
-              :doi => doi_node.text,
-              :resource => resource_node.text
-            }
-          end
-        end
-
-        @doi = {} if @doi.nil?
-        @doi
+	if @citing_node.nil?
+	  {}
+	else
+          @doi ||= {
+            :doi => @citing_node.at_css("doi_data doi", @@ns).text,
+            :resource => @citing_node.at_css("doi_data resource", @@ns).text
+          }
+	end
       end
 
       def publication_date
@@ -109,13 +101,23 @@ module Tobias
             :type => doi_info[:type]
           }
 
-          conj_published(record_base, doi_info[:parent])
-          conj_contributors(record_base, doi_info[:parent])
-          conj_title(record_base, doi_info[:parent])
-          conj_pages(record_base, doi_info[:parent])
+          contributors = contributors doi_info[:parent]
+          record_base[:contributors] = contributors if not contributors.nil?
 
-          conj_journal(record_base, doi_info[:parent].parent)
-          conj_proceedings(record_base, doi_info[:parent].parent)
+          published = published doi_info[:parent]
+          record_base[:published] = published if not published.nil?
+
+          title_node = doi_info[:parent].at_css("title", @@ns)
+          record_base[:title] = title_node.text if not title_node.nil?
+
+          if doi_info[:type] == "journal_article" ||
+              doi_info[:type] == "conference_paper"
+            journal_node = doi_info[:parent].parent
+            record_base[:journal] = journal(journal_node)
+
+            conj_issue(record_base, journal_node)
+            conj_volume(record_base, journal_node)
+          end
 
           record_base
         end
@@ -128,97 +130,63 @@ module Tobias
         hsh = {}
         parent.children.each do |child|
           key = child.name.to_sym
-          if not ignore.member? key
+          if not ignore.member? key 
             hsh[key] = child.text
           end
         end
         hsh
       end
 
-      def with_child parent_node, css
-        child_node = parent_node.at_css(css, @@ns)
-        if not child_node.nil?
-          yield child_node
-        else
-          nil
-        end
-      end
-
       def normalise_work_name name
         name.sub(/_metadata\Z/, "").gsub(/-/, "_")
       end
 
-      def conj_published record, parent_node
-        with_child parent_node, "publication_date" do |pub_date_node|
-          record[:published] = children_to_hash pub_date_node
-        end
+      def conj_volume record, journal_node
+        volume_node = journal_node.at_css("volume", @@ns)
+        record[:volume] = volume_node.text if not volume_node.nil?
       end
 
-      def conj_contributors record, parent_node
-        with_child parent_node, "contributors" do |contributors_node|
-          record[:contributors] = contributors_node.css("person_name", @@ns).map do |person_node|
+      def conj_issue record, journal_node
+        issue_node = journal_node.at_css("issue", @@ns)
+        record[:issue] = issue_node.text if not issue_node.nil?
+      end
+
+      def journal journal_node
+        metadata_node = journal_node.at_css "journal_metadata", @@ns
+        journal = children_to_hash metadata_node, [:issn]
+
+        metadata_node.css("issn", @@ns).each do |issn_node|
+          media_type = issn_node.attributes["media_type"]
+          
+          if !media_type.nil? && media_type.value == "print"
+            journal[:p_issn] = issn_node.text
+          elsif !media_type.nil? && media_type.value == "electronic"
+            journal[:e_issn] = issn_node.text
+          else
+            journal[:issn] = issn_node.text
+          end
+        end
+
+        if not journal.key?(:issn)
+          journal[:issn] = journal[:p_issn] || journal[:e_issn]
+        end
+
+        journal
+      end
+
+      def contributors parent_node
+        contributors_node = parent_node.at_css("contributors", @@ns)
+        if not contributors_node.nil?
+          contributors_node.css("person_name", @@ns).map do |person_node|
             children_to_hash person_node
           end
         end
       end
 
-      def conj_title record, parent_node
-        with_child(parent_node, "title") { |title_node| record[:title] = title_node.text }
-      end
-
-      def conj_volume record, parent_node
-        with_child(parent_node, "volume") { |volume_node| record[:volume] = volume_node.text }
-      end
-
-      def conj_issue record, parent_node
-        with_child(parent_node, "issue") { |issue_node| record[:issue] = issue_node.text }
-      end
-
-      def conj_pages record, parent_node
-        with_child(parent_node, "pages") { |pages_node| record[:pages] = children_to_hash(pages_node) }
-      end
-      def conj_proceedings record, conference_node
-        with_child conference_node, "proceedings_metadata" do |proceedings_node|
-          proceedings_record = {}
-
-          with_child proceedings_node, "proceedings_title" do |title_node|
-            proceedings_record[:title] = title_node.text
-          end
-
-          with_child proceedings_node, "proceedings_subject" do |subject_node|
-            proceedings_record[:subject] = subject_node.text
-          end
-
-          record[:proceedings] = proceedings_record
-
-          conj_volume record, proceedings_node
-        end
-      end
-
-      def conj_journal record, journal_node
-        with_child journal_node, "journal_metadata" do |metadata_node|
-          journal = children_to_hash metadata_node, [:issn]
-
-          metadata_node.css("issn", @@ns).each do |issn_node|
-            media_type = issn_node.attributes["media_type"]
-
-            if !media_type.nil? && media_type.value == "print"
-              journal[:p_issn] = issn_node.text
-            elsif !media_type.nil? && media_type.value == "electronic"
-              journal[:e_issn] = issn_node.text
-            else
-              journal[:issn] = issn_node.text
-            end
-          end
-
-          if not journal.key?(:issn)
-            journal[:issn] = journal[:p_issn] || journal[:e_issn]
-          end
-
-          record[:journal] = journal
-
-          conj_volume record, journal_node
-          conj_issue record, journal_node
+      def published parent_node
+        pub_date_node = parent_node.at_css("publication_date", @@ns)
+        if not pub_date_node.nil?
+          children_to_hash pub_date_node
         end
       end
 

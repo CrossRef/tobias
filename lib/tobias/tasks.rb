@@ -6,6 +6,7 @@ require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
 require_relative "uri"
+require_relative 'helpers'
 
 module Tobias
 
@@ -15,12 +16,12 @@ module Tobias
 
   URL_SAMPLE_FREQ = 0.1
 
-  def self.run_once task
+  def self.run_once task, *args
     task.public_methods.reject {|n| !n.to_s.start_with? "before"}.each do |name|
       task.public_method(name).call
     end
 
-    task.public_method(:perform).call
+    task.public_method(:perform).call(*args)
 
     task.public_methods.reject {|n| !n.to_s.start_with? "after"}.each do |name|
       task.public_method(name).call
@@ -38,7 +39,7 @@ module Tobias
   end
 
   class DispatchDirectory
-    @queue = :directories
+    @queue = :local
 
     def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
@@ -50,7 +51,7 @@ module Tobias
   end
 
   class SplitRecordList < ConfigTask
-    @queue = :files
+    @queue = :injest
 
     def self.perform(filename, action)
       grid = Config.grid
@@ -69,7 +70,7 @@ module Tobias
   end
 
   class ParseRecords < ConfigTask
-    @queue = :records
+    @queue = :injest
 
     def self.perform(ids, action)
       grid = Config.grid
@@ -243,6 +244,54 @@ module Tobias
     end
   end
 
+  class InjestCategories < ConfigTask
+    @queue = :local
+
+    def self.perform filename
+      coll = Config.collection 'issns'
+
+      File.open filename do |file|
+        file.lines.drop(1).each do |line|
+          p_issn, e_issn, category_str = line.split "\t"
+          categories = category_str.split(';').map { |s| s.strip }.reject { |s| s.empty? }
+
+          doc = {
+            :p_issn => Helpers.normalise_issn(p_issn),
+            :e_issn => Helpers.normalise_issn(e_issn),
+            :categories => categories
+          }
+
+          doc.reject! { |_,v| v.nil? || v.empty? }
+
+          coll.insert doc
+        end
+      end
+    end
+
+  end
+
+  class InjestCategoryNames < ConfigTask
+    @queue = :local
+
+    def self.perform filename
+      coll = Config.collection 'categories'
+
+      File.open filename do |file|
+        file.lines.drop(1).each do |line|
+          code, name = line.split "\t"
+
+          doc = {
+            :code => code,
+            :name => name.strip
+          }
+
+          coll.insert doc
+        end
+      end
+    end
+
+  end
+
   class ResolveCitations < ConfigTask
 
     def self.match? response
@@ -270,8 +319,15 @@ module Tobias
 
     def self.perform
       coll = Config.collection "citations"
-      query = {"$and" => [{"to.doi" => {"$exists" => true}}, {"to.unstructured_citation" => {"$exists" => true}}]}
       results = {:good_match => 0, :bad_match => 0, :no_match => 0}
+      query = {
+        "$and" => [{
+            "to.doi" => {"$exists" => true}
+          },
+          {
+            "to.unstructured_citation" => {"$exists" => true}
+          }
+        ]}
 
       coll.find(query).each do |citation|
         # If the citation has an unstructured_citation we construct a query
