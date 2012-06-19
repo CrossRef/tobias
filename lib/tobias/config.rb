@@ -8,7 +8,7 @@ module Tobias
 
     @@filename = File.join(File.dirname(__FILE__), "..", "..", "config.json")
     @@location = ENV["CONFIG"] || "local"
-    
+
     def self.load!(filename = @@filename, location = @@location)
       File.open filename, "rb" do |file|
         @@config = JSON.parse(file.read)[location]
@@ -22,7 +22,7 @@ module Tobias
     def self.mongo
       @@mongo ||= Mongo::Connection.new(@@config["mongo-server"])
     end
-    
+
     def self.collection collection_name
       mongo[@@config["mongo-name"]][collection_name]
     end

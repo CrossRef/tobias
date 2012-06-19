@@ -8,10 +8,10 @@ module Tobias
 
       # These kinds can have a citation list.
       @@citing_kinds = ["journal_article", "conference_paper", "book_metadata",
-                        "book_series_metadata", "book_set_metadata", "content_item", 
+                        "book_series_metadata", "book_set_metadata", "content_item",
                         "dissertation", "report-paper_metadata", "series_metadata",
                         "standard_metadata", "standard_series_metadata", "dataset"]
-      
+
       def initialize record_node
         @record_node = record_node
         matches = @@citing_kinds.map { |kind| @record_node.at_css(kind, @@ns) }
@@ -186,7 +186,12 @@ module Tobias
       def published parent_node
         pub_date_node = parent_node.at_css("publication_date", @@ns)
         if not pub_date_node.nil?
-          children_to_hash pub_date_node
+          hash = children_to_hash pub_date_node
+          integer_hash = {}
+          hash.each_pair do |k, v|
+            integer_hash[k] = v.to_i
+          end
+          integer_hash
         end
       end
 

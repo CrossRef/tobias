@@ -217,7 +217,6 @@ module Tobias
     end
 
     def self.perform
-
       coll = Config.collection "dois"
       solr_docs = []
 
@@ -240,8 +239,8 @@ module Tobias
         Config.solr.add solr_docs
         Config.solr.update :data => "<commit/>"
       end
-
     end
+
   end
 
   class InjestCategories < ConfigTask
