@@ -6,7 +6,6 @@ require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
 require_relative "uri"
-require_relative 'helpers'
 
 module Tobias
 
@@ -184,7 +183,7 @@ module Tobias
       index_str = ""
 
       if doc["published"]
-        index_str << doc["published"]["year"] if doc["published"]["year"]
+        index_str << doc["published"]["year"].to_i.to_s if doc["published"]["year"]
       end
 
       index_str << " " + doc["title"] if doc["title"]
