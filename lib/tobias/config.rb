@@ -33,7 +33,7 @@ module Tobias
     end
 
     def self.solr
-      @@solr ||= RSolr.connect :url => @@config['solr-server']
+      @@solr ||= RSolr.connect({:url => @@config['solr-server']})
     end
 
     def self.shutdown!
