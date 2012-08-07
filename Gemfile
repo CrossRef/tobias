@@ -1,0 +1,5 @@
+source 'http://rubygems.org'
+gem 'mongo'
+gem 'json'
+gem 'resque'
+gem 'nokogiri'
