@@ -169,7 +169,7 @@ module Tobias
         doc = coll.find_one(BSON::ObjectId.from_string(id))
         doc["url"]["status"] = URI(doc["url"]["full"]).status
         coll.save doc
-      end
+      end    
     end
   end
 
