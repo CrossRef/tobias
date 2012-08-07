@@ -11,5 +11,11 @@
     "mongo-server": "192.168.1.152",
     "mongo-name": "crossref",
     "solr-server": "http://192.168.1.152:8983/solr"
+  },
+  "fresno": {
+    "redis-server": "localhost",
+    "mongo-server": "5.9.51.150",
+    "mongo-name": "crossref",
+    "solr-server": "http://localhost:8983/solr"
   }
 }
