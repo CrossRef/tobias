@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require "resque"
 require "mongo"
 require "nokogiri"
@@ -6,6 +7,7 @@ require_relative "oai/record"
 require_relative "oai/list_records"
 require_relative "config"
 require_relative "uri"
+require_relative 'helpers'
 
 module Tobias
 
@@ -178,8 +180,6 @@ module Tobias
     end
 
     def self.to_solr_content doc
-      # TODO Remove duplicate words?
-
       index_str = ""
 
       if doc["published"]
@@ -216,15 +216,91 @@ module Tobias
     end
 
     def self.perform
-      coll = Config.collection "dois"
+      dois_coll = Config.collection "dois"
+      categories_coll = Config.collection 'categories'
+      issns_coll = Config.collection 'issns'
       solr_docs = []
 
-      coll.find().each do |doc|
+      dois_coll.find().each do |doc|
         if ["journal_article", "conference_paper"].include? doc["type"]
-          solr_docs << {
-            :doi => doc["doi"],
-            :content => to_solr_content(doc)
+
+          solr_doc = {
+            :doiKey => doc["doi"],
+            :doi => doc['doi'].downcase,
+            :content => to_solr_content(doc),
+            :type => doc['type'],
+            :year => doc['published']['year'],
+            :hl_year => doc['published']['year'],
+            :category => []
           }
+
+          # Publication name
+
+          case doc['type']
+          when 'journal_article'
+            solr_doc[:publication] = doc['journal']['full_title']
+            solr_doc[:hl_publication] = doc['journal']['full_title']
+          when 'conference_paper'
+            solr_doc[:publication] = doc['proceedings']['title']
+            solr_doc[:hl_publication] = doc['proceedings']['title']
+          end
+
+          # Category
+
+          if doc['type'] == 'journal_article'
+            query = []
+
+            if doc['journal'].has_key? 'p_issn'
+              query << {:p_issn => Helpers.normalise_issn(doc['journal']['p_issn'])}
+            end
+
+            if doc['journal'].has_key? 'e_issn'
+              query << {:e_issn => Helpers.normalise_issn(doc['journal']['e_issn'])}
+            end 
+
+            unless query.empty?
+              issn_record = issns_coll.find_one({'$or' => query})
+
+              unless issn_record.nil? || issn_record['categories'].nil?
+                issn_record['categories'].each do |category_code|
+                  category_record = categories_coll.find_one({:code => category_code})
+                  solr_doc[:category] << category_record['name']
+                end
+              end
+            end
+          end
+
+          if solr_doc[:category].empty?
+            solr_doc[:category] << 'Not Specified'
+          end
+
+          # ISSN and ISBN
+
+          if doc.has_key?('journal') 
+            if doc['journal'].has_key?('p_issn') || doc['journal'].has_key?('e_issn')
+              solr_doc[:issn] = []
+              if doc['journal'].has_key?('p_issn')
+                solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['p_issn'])
+              end
+              if doc['journal'].has_key?('e_issn')
+                solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['e_issn'])
+              end
+            end
+          end
+
+          solr_doc[:hl_volume] = doc['volume'] if doc.has_key? 'volume'
+          solr_doc[:hl_issue] = doc['issue'] if doc.has_key? 'issue'
+          solr_doc[:hl_title] = doc['title'] if doc.has_key? 'title'
+
+          # Authors
+
+          if doc.has_key? 'contributors'
+            solr_doc[:hl_authors] = doc['contributors'].map do |contributor|
+              "#{contributor['given_name']} #{contributor['surname']}"
+            end
+          end
+          
+          solr_docs << solr_doc
 
           if solr_docs.count % 1000 == 0
             Config.solr.add solr_docs
