@@ -53,3 +53,15 @@ task :category_names do
   require_relative 'lib/tobias/tasks'
   Tobias.run_once Tobias::InjestCategoryNames, ENV['FILE']
 end
+
+task :add_norm_dois do
+  require_relative 'lib/tobias/tasks'
+  Tobias.run_once Tobias::AddNormalisedDois
+end
+
+task :scrape_doaj do
+  require_relative 'lib/tobias/doaj'
+  require_relative 'lib/tobias/tasks'
+  Tobias.run_once Tobias::DoajScrapeTask
+end
+

@@ -189,8 +189,13 @@ module Tobias
       index_str << " " + doc["title"] if doc["title"]
 
       if doc["journal"]
-        index_str << " " + doc["journal"]["full_title"] if doc["journal"]["full_title"]
-        index_str << " " + doc["journal"]["abbrev_title"] if doc["journal"]["abbrev_title"]
+        journal = doc['journal']
+
+        index_str << " " + journal["full_title"] if journal["full_title"]
+        index_str << " " + journal["abbrev_title"] if journal["abbrev_title"]
+
+        
+          
       end
 
       if doc["proceedings"]
@@ -221,91 +226,109 @@ module Tobias
       issns_coll = Config.collection 'issns'
       solr_docs = []
 
-      dois_coll.find().each do |doc|
-        if ["journal_article", "conference_paper"].include? doc["type"]
+      dois_coll.find({}, {:timeout => false}) do |cursor|
+        cursor.each do |doc|
+          if ["journal_article", "conference_paper"].include? doc["type"]
 
-          solr_doc = {
-            :doiKey => doc["doi"],
-            :doi => doc['doi'].downcase,
-            :content => to_solr_content(doc),
-            :type => doc['type'],
-            :year => doc['published']['year'],
-            :hl_year => doc['published']['year'],
-            :category => []
-          }
+            solr_doc = {
+              :doiKey => doc['doi'],
+              :doi => doc['doi'].downcase,
+              :content => to_solr_content(doc),
+              :type => doc['type'],
+              :category => [],
+              :oa_status => 'Other'
+            }
+              
+            # Publication year
 
-          # Publication name
-
-          case doc['type']
-          when 'journal_article'
-            solr_doc[:publication] = doc['journal']['full_title']
-            solr_doc[:hl_publication] = doc['journal']['full_title']
-          when 'conference_paper'
-            solr_doc[:publication] = doc['proceedings']['title']
-            solr_doc[:hl_publication] = doc['proceedings']['title']
-          end
-
-          # Category
-
-          if doc['type'] == 'journal_article'
-            query = []
-
-            if doc['journal'].has_key? 'p_issn'
-              query << {:p_issn => Helpers.normalise_issn(doc['journal']['p_issn'])}
+            if doc.has_key?('published') && doc['published'].has_key?('year')
+              solr_doc[:year] = doc['published']['year'].to_i
+              solr_doc[:hl_year] = doc['published']['year'].to_i
+            end
+            
+            # Publication name
+            
+            if doc.has_key? 'journal'
+              if doc['journal'].has_key? 'full_title'
+                solr_doc[:publication] = doc['journal']['full_title']
+                solr_doc[:hl_publication] = doc['journal']['full_title']
+              end
+            elsif doc.has_key? 'proceedings'
+              if doc['proceedings'].has_key? 'title'
+                solr_doc[:publication] = doc['proceedings']['title']
+                solr_doc[:hl_publication] = doc['proceedings']['title']
+              end
             end
 
-            if doc['journal'].has_key? 'e_issn'
-              query << {:e_issn => Helpers.normalise_issn(doc['journal']['e_issn'])}
-            end 
-
-            unless query.empty?
-              issn_record = issns_coll.find_one({'$or' => query})
-
-              unless issn_record.nil? || issn_record['categories'].nil?
-                issn_record['categories'].each do |category_code|
-                  category_record = categories_coll.find_one({:code => category_code})
-                  solr_doc[:category] << category_record['name']
+            # Category and OA status
+            
+            if doc['type'] == 'journal_article'
+              query = []
+              
+              if doc['journal'].has_key? 'p_issn'
+                query << {:p_issn => Helpers.normalise_issn(doc['journal']['p_issn'])}
+              end
+              
+              if doc['journal'].has_key? 'e_issn'
+                query << {:e_issn => Helpers.normalise_issn(doc['journal']['e_issn'])}
+              end 
+              
+              unless query.empty?
+                issn_record = issns_coll.find_one({'$or' => query})
+                
+                unless issn_record.nil? || issn_record['categories'].nil?
+                  issn_record['categories'].each do |category_code|
+                    category_record = categories_coll.find_one({:code => category_code})
+                    solr_doc[:category] << category_record['name']
+                  end
+                end
+                
+                if !issn_record.nil? && issn_record['oa_info'] == 'doaj'
+                  solr_doc[:oa_status] = 'Open Access'
                 end
               end
             end
-          end
 
-          if solr_doc[:category].empty?
-            solr_doc[:category] << 'Not Specified'
-          end
+            if solr_doc[:category].empty?
+              solr_doc[:category] << 'Not Specified'
+            end
 
-          # ISSN and ISBN
-
-          if doc.has_key?('journal') 
-            if doc['journal'].has_key?('p_issn') || doc['journal'].has_key?('e_issn')
-              solr_doc[:issn] = []
-              if doc['journal'].has_key?('p_issn')
-                solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['p_issn'])
-              end
-              if doc['journal'].has_key?('e_issn')
-                solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['e_issn'])
+            # ISSN and ISBN
+            
+            if doc.has_key?('journal')
+              if doc['journal'].has_key?('p_issn') || doc['journal'].has_key?('e_issn')
+                solr_doc[:issn] = []
+                if doc['journal'].has_key?('p_issn')
+                  solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['p_issn'])
+                end
+                if doc['journal'].has_key?('e_issn')
+                  solr_doc[:issn] << Helpers.normalise_issn(doc['journal']['e_issn'])
+                end
               end
             end
-          end
+            
+            solr_doc[:hl_volume] = doc['volume'] if doc.has_key? 'volume'
+            solr_doc[:hl_issue] = doc['issue'] if doc.has_key? 'issue'
+            solr_doc[:hl_title] = doc['title'] if doc.has_key? 'title'
 
-          solr_doc[:hl_volume] = doc['volume'] if doc.has_key? 'volume'
-          solr_doc[:hl_issue] = doc['issue'] if doc.has_key? 'issue'
-          solr_doc[:hl_title] = doc['title'] if doc.has_key? 'title'
+            # Authors
 
-          # Authors
+            if doc.has_key? 'contributors'
+              authors = doc['contributors'].map do |contributor|
+                "#{contributor['given_name']} #{contributor['surname']}"
+              end
 
-          if doc.has_key? 'contributors'
-            solr_doc[:hl_authors] = doc['contributors'].map do |contributor|
-              "#{contributor['given_name']} #{contributor['surname']}"
+              solr_doc[:hl_authors] = authors.join(', ')
             end
-          end
           
-          solr_docs << solr_doc
+            solr_docs << solr_doc
 
-          if solr_docs.count % 1000 == 0
-            Config.solr.add solr_docs
-            Config.solr.update :data => "<commit/>"
-            solr_docs = []
+            if solr_docs.count % 1000 == 0
+              Config.solr.add solr_docs
+              Config.solr.update :data => "<commit/>"
+              solr_docs = []
+            end
+
           end
         end
       end
@@ -314,6 +337,7 @@ module Tobias
         Config.solr.add solr_docs
         Config.solr.update :data => "<commit/>"
       end
+
     end
 
   end
@@ -360,6 +384,28 @@ module Tobias
           }
 
           coll.insert doc
+        end
+      end
+    end
+
+  end
+
+  class AddNormalisedDois < ConfigTask
+
+    def self.perform
+      dois_coll = Config.collection "dois"
+      completed_count = 0
+
+      dois_coll.find({:normal_doi => {'$exists' => false}}).each do |doc|
+        doc['normal_doi'] = doc['doi'].downcase
+        query = {:doi => doc['doi']}
+        update = {'$set' => {:normal_doi => doc['doi'].downcase}}
+        dois_coll.update query, update
+
+        completed_count = completed_count.next
+
+        if (completed_count % 10000).zero?
+          puts "Completed #{completed_count}"
         end
       end
     end
