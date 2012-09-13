@@ -2,6 +2,7 @@ require "json"
 require "mongo"
 require "resque"
 require 'rsolr'
+require 'oai'
 
 module Tobias
 
@@ -34,6 +35,10 @@ module Tobias
 
     def self.solr
       @@solr ||= RSolr.connect({:url => @@config['solr-server']})
+    end
+
+    def self.oai_client
+      @@oai_client ||= OAI::Client.new 'http://oai.crossref.org/OAIHandler'
     end
 
     def self.shutdown!

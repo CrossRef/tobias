@@ -24,6 +24,12 @@ task :queue_dir do
                      ENV["ACTION"] || "citations")
 end
 
+task :harvest do
+  require_relative 'lib/tobias/harvest'
+  require_relative 'lib/tobias/tasks'
+  Tobias.run_once Tobias::GetChangedSets, '2012-04-04'
+end
+
 task :parse_urls do
   require_relative "lib/tobias/tasks"
   Tobias.run_once Tobias::ParseUrls
