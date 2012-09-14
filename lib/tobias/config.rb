@@ -41,6 +41,10 @@ module Tobias
       @@oai_client ||= OAI::Client.new 'http://oai.crossref.org/OAIHandler'
     end
 
+    def self.data_home
+      @@config['data-home']
+    end
+
     def self.shutdown!
       if not @@mongo.nil?
         @@mongo.close

@@ -1,38 +1,40 @@
 # -*- coding: utf-8 -*-
+require 'fileutils'
+
 require_relative 'tasks'
 require_relative 'config'
 
 module Tobias
 
-  # List all changed set specs since a date. Download changed records
-  # from each changed set spec via GetChangedRecords.
-  class GetChangedSets < ConfigTask
-    @queue = :harvest
-
-    def self.perform(since_date)
-      Config.oai_client.list_sets({:from => since_date}).each do |set_spec|
-        #Resque.enqueue(GetChangedRecords, set_spec, since_date)
-        puts set_spec
-      end
-    end
-  end
-
-  # Get records for a particular set spec and injest them into mongo via 
-  # InjestRecords.
+  # Find all changed records and injest them into mongo.
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
-    def self.perform(set_spec, since_date)
+    def self.perform since_date
+      data_path = File.join(Config.data_home, 'oai', since_date.strftime('%Y-%m-%d'))
+      resumption_count = 0
       query = {
         :from => since_date,
-        :set => set_spec
+        :metadata_prefix => 'cr_unixml'
       }
 
-      Config.oai_client.list_records(query).each do |record|
-        puts record.metadata
-      end
-    end
+      FileUtils.mkpath(data_path)
 
+      response = Config.oai_client.list_records(query)
+      File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
+        file << response.doc
+      end
+        
+      while !response.resumption_token.nil? && !response.resumption_token.empty?
+        puts "Resuming with #{response.resumption_token}"
+        resumption_count = resumption_count.next
+        response = Config.oai_client.list_records(:resumption_token => response.resumption_token)
+        File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
+          file << response.doc
+        end
+      end
+
+    end
   end
 
 end
