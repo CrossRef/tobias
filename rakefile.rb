@@ -27,7 +27,7 @@ end
 task :harvest do
   require_relative 'lib/tobias/harvest'
   require_relative 'lib/tobias/tasks'
-  Tobias.run_once Tobias::GetChangedRecords, Date.new(ENV['YEAR'], ENV['MONTH'], ENV['DAY'])
+  Tobias.run_once Tobias::GetChangedRecords, Date.new(ENV['YEAR'].to_i, ENV['MONTH'].to_i, ENV['DAY'].to_i)
 end
 
 task :parse_urls do
