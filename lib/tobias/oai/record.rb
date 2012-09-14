@@ -98,7 +98,9 @@ module Tobias
         @bibo_records ||= dois.map do |doi_info|
           record_base = {
             :doi => doi_info[:doi],
-            :type => doi_info[:type]
+            :normal_doi => doi_info[:doi].downcase,
+            :type => doi_info[:type],
+            :random_index => rand
           }
 
           contributors = contributors doi_info[:parent]
@@ -157,13 +159,14 @@ module Tobias
 
         metadata_node.css("issn", @@ns).each do |issn_node|
           media_type = issn_node.attributes["media_type"]
-          
+          normal_issn = Helpers.normalise_issn(issn_node.text)
+
           if !media_type.nil? && media_type.value == "print"
-            journal[:p_issn] = issn_node.text
+            journal[:p_issn] = normal_issn
           elsif !media_type.nil? && media_type.value == "electronic"
-            journal[:e_issn] = issn_node.text
+            journal[:e_issn] = normal_issn
           else
-            journal[:issn] = issn_node.text
+            journal[:issn] = normal_issn
           end
         end
 
