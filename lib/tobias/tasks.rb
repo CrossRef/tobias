@@ -62,7 +62,7 @@ module Tobias
       Dir.new(directory_name).each do |filename|
         path = File.join(directory_name, filename)
 
-        if coll.find_one({:path => path, :action => action}).nil?
+        if path.end_with?('.xml') && coll.find_one({:path => path, :action => action}).nil?
           doc = {
             :path => path,
             :created_at => Time.now,
