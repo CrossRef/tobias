@@ -1,21 +1,21 @@
 
 {
   "local": {
-    "redis-server": "localhost",
+    "redis-server": "localhost:6379",
     "mongo-server": "localhost",
     "mongo-name": "crossref",
     "solr-server": "http://localhost:8983/solr",
     "data-home": "/home/kward/tobias-data"
   },
   "oxford": {
-    "redis-server": "192.168.1.152",
+    "redis-server": "192.168.1.152:6379",
     "mongo-server": "192.168.1.152",
     "mongo-name": "crossref",
     "solr-server": "http://192.168.1.152:8983/solr",
     "data-home": "/home/kward/tobias-data"
   },
   "fresno": {
-    "redis-server": "localhost",
+    "redis-server": "localhost:6379",
     "mongo-server": "5.9.51.150",
     "mongo-name": "crossref",
     "solr-server": "http://localhost:8983/solr",
