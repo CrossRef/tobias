@@ -28,12 +28,19 @@ module Tobias
       while !response.resumption_token.nil? && !response.resumption_token.empty?
         puts "Resuming with #{response.resumption_token}"
         resumption_count = resumption_count.next
-        response = Config.oai_client.list_records(:resumption_token => response.resumption_token)
-        File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
-          file << response.doc
+        10.times do
+          begin
+            response = Config.oai_client.list_records(:resumption_token => response.resumption_token)
+            File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
+              file << response.doc
+            end
+            break
+          rescue Exception => e
+            puts "Retrying due to #{e}"
+            sleep 3
+          end
         end
       end
-
     end
   end
 

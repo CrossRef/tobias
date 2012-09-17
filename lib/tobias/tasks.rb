@@ -40,12 +40,39 @@ module Tobias
   end
 
   class DispatchDirectory
-    @queue = :local
+    @queue = :injest
 
     def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
         if filename.end_with? ".xml"
           Resque.enqueue(SplitRecordList, File.join(directory_name, filename), action)
+        end
+      end
+    end
+  end
+
+  # Same as DispatchDirectory, except remembers files it dispatches and will never
+  # dispatch the same file twice. Uniqueness based on file path, so don't move
+  # files around between runs.
+  class DispatchIncrementalDirectory
+    @queue = :injest
+    
+    def self.perform(directory_name, action)
+      coll = Config.collection 'dispatches'
+      Dir.new(directory_name).each do |filename|
+        path = File.join(directory_name, filename)
+
+        if coll.find_one({:path => path, :action => action}).nil?
+          doc = {
+            :path => path,
+            :created_at => Time.now,
+            :parent_path => directory_name,
+            :action => action
+          }
+
+          coll.insert doc
+            
+          Resque.enqueue(SplitRecordList, path, action)
         end
       end
     end
