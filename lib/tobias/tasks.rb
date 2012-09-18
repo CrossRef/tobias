@@ -210,9 +210,6 @@ module Tobias
     end
   end
 
-  class updateSolrForDois < UpdateSolr
-    @queue = :injest
-
   class UpdateSolr < ConfigTask
     @queue = :injest
 
