@@ -13,7 +13,8 @@ module Tobias
     @queue = :harvest
 
     def self.perform since_date, until_date, action
-      data_path = File.join(Config.data_home, 'oai', since_date.strftime('%Y-%m-%d'))
+      leaf_dir = "#{since_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
+      data_path = File.join(Config.data_home, 'oai', leaf_dir)
       resumption_count = 0
       query = {
         :from => since_date,
