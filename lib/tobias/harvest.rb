@@ -67,6 +67,7 @@ module Tobias
         Resque.enqueue(GetChangedRecords, from_date, until_date, action)
       end
     end
+  end
 
 end
 
