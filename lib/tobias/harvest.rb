@@ -13,6 +13,8 @@ module Tobias
     @queue = :harvest
 
     def self.perform since_date, until_date, action
+      since_date = Date.strptime(since_date, '%Y-%m-%d')
+      until_date = Date.strptime(until_date, '%Y-%m-%d')
       leaf_dir = "#{since_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
       data_path = File.join(Config.data_home, 'oai', leaf_dir)
       resumption_count = 0
@@ -55,16 +57,23 @@ module Tobias
   class HarvestDateRange
     @queue = :harvest
 
+    def self.queue_up from_date, until_date, action
+      f = from_date.strftime('%Y-%m-%d')
+      u = until_date.strftime('%Y-%m-%d')
+      Resqueue.enqueue(GetChangedRecords, f, u, action)
+      puts "Enqueue harvest for #{f} to #{u}"
+    end
+
     def self.perform from_date, until_date, action
       days = until_date - from_date
 
       (days / DAYS_PER_HARVEST).to_i.times do
-        Resque.enqueue(GetChangedRecords, from_date, from_date + (DAYS_PER_HARVEST - 1), action)
+        queue_up(from_date, from_date + (DAYS_PER_HARVEST - 1), action)
         from_date = from_date + DAYS_PER_HARVEST
       end
 
       if from_date != until_date
-        Resque.enqueue(GetChangedRecords, from_date, until_date, action)
+        queue_up(from_date, until_date, action)
       end
     end
   end
