@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'fileutils'
+require 'date'
 
 require_relative 'tasks'
 require_relative 'config'
@@ -12,14 +13,14 @@ module Tobias
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
-    def self.perform since_date, until_date, action
-      since_date = Date.strptime(since_date, '%Y-%m-%d')
+    def self.perform from_date, until_date, action
+      from_date = Date.strptime(from_date, '%Y-%m-%d')
       until_date = Date.strptime(until_date, '%Y-%m-%d')
       leaf_dir = "#{since_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
       data_path = File.join(Config.data_home, 'oai', leaf_dir)
       resumption_count = 0
       query = {
-        :from => since_date,
+        :from => from_date,
         :until => until_date,
         :metadata_prefix => 'cr_unixml'
       }
@@ -53,14 +54,14 @@ module Tobias
     end
   end
  
-  # Harvests many week-long date ranges within a given date range
+  # Harvests many two-day date ranges within a given date range
   class HarvestDateRange
     @queue = :harvest
 
     def self.queue_up from_date, until_date, action
       f = from_date.strftime('%Y-%m-%d')
       u = until_date.strftime('%Y-%m-%d')
-      Resqueue.enqueue(GetChangedRecords, f, u, action)
+      Resque.enqueue(GetChangedRecords, f, u, action)
       puts "Enqueue harvest for #{f} to #{u}"
     end
 

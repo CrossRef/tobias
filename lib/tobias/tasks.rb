@@ -38,21 +38,20 @@ module Tobias
       Config.shutdown!
     end
 
-    def record_file_dispatch file_path, action
+    def self.record_file_dispatch file_path, action
       coll = Config.collection 'dispatches'
       doc = {
-        :path => path,
+        :path => file_path,
         :created_at => Time.now,
-        :parent_path => directory_name,
         :action => action
       }
 
       coll.insert doc
     end
 
-    def file_dispatched_for_action? file_path, action
+    def self.file_dispatched_for_action? file_path, action
       coll = Config.collection 'dispatches'
-      !coll.find_one({:path => path, :action => action}).nil?
+      !coll.find_one({:path => file_path, :action => action}).nil?
     end
   end
 
