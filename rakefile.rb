@@ -9,6 +9,7 @@ RSpec::Core::RakeTask.new
 require "resque/tasks"
 
 task "resque:setup" do
+  require_relative 'lib/tobias/harvest'
   require_relative "lib/tobias/tasks"
   require_relative "lib/tobias/config"
 
