@@ -29,7 +29,8 @@ task :harvest do
   require_relative 'lib/tobias/tasks'
   from_date = Date.strptime(ENV['FROM'], '%Y-%m-%d')
   until_date = Date.strptime(ENV['UNTIL'], '%Y-%m-%d')
-  Tobias.run_once Tobias::HarvestDateRange, from_date, until_date
+  action = ENV['ACTION'] || 'dois'
+  Tobias.run_once Tobias::HarvestDateRange, from_date, until_date, action
 end
 
 task :parse_urls do
