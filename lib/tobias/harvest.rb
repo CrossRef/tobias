@@ -6,15 +6,18 @@ require_relative 'config'
 
 module Tobias
 
+  DAYS_PER_HARVEST = 2
+
   # Find all changed records and injest them into mongo.
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
-    def self.perform since_date, action
+    def self.perform since_date, until_date, action
       data_path = File.join(Config.data_home, 'oai', since_date.strftime('%Y-%m-%d'))
       resumption_count = 0
       query = {
         :from => since_date,
+        :until => until_date,
         :metadata_prefix => 'cr_unixml'
       }
 
@@ -46,6 +49,23 @@ module Tobias
       end
     end
   end
+ 
+  # Harvests many week-long date ranges within a given date range
+  class HarvestDateRange < ConfigTask
+    @queue = :harvest
+
+    def self.perform from_date, until_date, action
+      days = until_date - from_date
+
+      (days / DAYS_PER_HARVEST).to_i.times do
+        Resque.enqueue(GetChangedRecords, from_date, from_date + (DAYS_PER_HARVEST - 1), action)
+        from_date = from_date + DAYS_PER_HARVEST
+      end
+
+      if from_date != until_date
+        Resque.enqueue(GetChangedRecords, from_date, until_date, action)
+      end
+    end
 
 end
 

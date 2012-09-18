@@ -27,7 +27,9 @@ end
 task :harvest do
   require_relative 'lib/tobias/harvest'
   require_relative 'lib/tobias/tasks'
-  Tobias.run_once Tobias::GetChangedRecords, Date.new(ENV['YEAR'].to_i, ENV['MONTH'].to_i, ENV['DAY'].to_i)
+  from_date = Date.strptime(ENV['FROM'], '%Y-%m-%d')
+  until_date = Date.strptime(ENV['UNTIL'], '%Y-%m-%d')
+  Tobias.run_once Tobias::HarvestDateRange, from_date, until_date
 end
 
 task :parse_urls do
