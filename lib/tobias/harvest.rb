@@ -52,7 +52,7 @@ module Tobias
   end
  
   # Harvests many week-long date ranges within a given date range
-  class HarvestDateRange < ConfigTask
+  class HarvestDateRange
     @queue = :harvest
 
     def self.perform from_date, until_date, action
