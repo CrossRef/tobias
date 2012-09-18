@@ -16,7 +16,7 @@ module Tobias
     def self.perform from_date, until_date, action
       from_date = Date.strptime(from_date, '%Y-%m-%d')
       until_date = Date.strptime(until_date, '%Y-%m-%d')
-      leaf_dir = "#{since_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
+      leaf_dir = "#{from_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
       data_path = File.join(Config.data_home, 'oai', leaf_dir)
       resumption_count = 0
       query = {
