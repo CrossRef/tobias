@@ -10,7 +10,7 @@ module Tobias
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
-    def self.perform since_date
+    def self.perform since_date, action
       data_path = File.join(Config.data_home, 'oai', since_date.strftime('%Y-%m-%d'))
       resumption_count = 0
       query = {
@@ -31,9 +31,12 @@ module Tobias
         10.times do
           begin
             response = Config.oai_client.list_records(:resumption_token => response.resumption_token)
-            File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
+            file_path = File.join(data_path, "#{resumption_count}.xml")
+            File.open(file_path, 'w') do |file|
               file << response.doc
             end
+            Resque.enqueue(SplitRecordList, file_path, action)
+            record_file_dispatch(file_path, action)
             break
           rescue Exception => e
             puts "Retrying due to #{e}"

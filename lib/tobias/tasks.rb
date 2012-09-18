@@ -37,6 +37,23 @@ module Tobias
     def self.after_perform_config(*args)
       Config.shutdown!
     end
+
+    def record_file_dispatch file_path, action
+      coll = Config.collection 'dispatches'
+      doc = {
+        :path => path,
+        :created_at => Time.now,
+        :parent_path => directory_name,
+        :action => action
+      }
+
+      coll.insert doc
+    end
+
+    def file_dispatched_for_action? file_path, action
+      coll = Config.collection 'dispatches'
+      !coll.find_one({:path => path, :action => action}).nil?
+    end
   end
 
   class DispatchDirectory
@@ -58,21 +75,13 @@ module Tobias
     @queue = :injest
     
     def self.perform(directory_name, action)
-      coll = Config.collection 'dispatches'
+      
       Dir.new(directory_name).each do |filename|
         path = File.join(directory_name, filename)
 
-        if path.end_with?('.xml') && coll.find_one({:path => path, :action => action}).nil?
-          doc = {
-            :path => path,
-            :created_at => Time.now,
-            :parent_path => directory_name,
-            :action => action
-          }
-
-          coll.insert doc
-            
+        if path.end_with?('.xml') && !file_dispatched_for_action?(path, action)
           Resque.enqueue(SplitRecordList, path, action)
+          record_file_dispatch(path, action)
         end
       end
     end
@@ -201,7 +210,12 @@ module Tobias
     end
   end
 
+  class updateSolrForDois < UpdateSolr
+    @queue = :injest
+
   class UpdateSolr < ConfigTask
+    @queue = :injest
+
     def self.initials given_name
       given_name.split(/[\s\-]+/).map { |name| name[0] }.join(" ")
     end
@@ -220,9 +234,6 @@ module Tobias
 
         index_str << " " + journal["full_title"] if journal["full_title"]
         index_str << " " + journal["abbrev_title"] if journal["abbrev_title"]
-
-        
-          
       end
 
       if doc["proceedings"]
@@ -370,7 +381,7 @@ module Tobias
   end
 
   class InjestCategories < ConfigTask
-    @queue = :local
+    @queue = :injest
 
     def self.perform filename
       coll = Config.collection 'issns'
@@ -396,7 +407,7 @@ module Tobias
   end
 
   class InjestCategoryNames < ConfigTask
-    @queue = :local
+    @queue = :injest
 
     def self.perform filename
       coll = Config.collection 'categories'
