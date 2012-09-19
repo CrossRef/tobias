@@ -1,5 +1,5 @@
-job_type :harvest, 'FROM=:from UNTIL=:until ACTION=:task bundle exec rake harvest'
+job_type :harvest, 'DAYS=:days ACTION=:task bundle exec rake harvest_recent'
 
 every 2.days, :at => '11:00pm' do
-  harvest 'dois', :from => (Date.today - 2), :until => (Date.today - 1)
+  harvest 'dois', :days => 2
 end

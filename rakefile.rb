@@ -25,12 +25,24 @@ task :queue_dir do
                      ENV["ACTION"] || "citations")
 end
 
-task :harvest do
+task :harvest_range do
   require_relative 'lib/tobias/harvest'
   require_relative 'lib/tobias/tasks'
   from_date = Date.strptime(ENV['FROM'], '%Y-%m-%d')
   until_date = Date.strptime(ENV['UNTIL'], '%Y-%m-%d')
   action = ENV['ACTION'] || 'dois'
+  Tobias.run_once Tobias::HarvestDateRange, from_date, until_date, action
+end
+
+task :harvest_recent do
+  require_relative 'lib/tobias/harvest'
+  require_relative 'lib/tobias/tasks'
+
+  from_date = Date.today - ENV['DAYS'].to_i
+  until_date = Date.today - 1
+
+  action = ENV['ACTION'] || 'dois'
+
   Tobias.run_once Tobias::HarvestDateRange, from_date, until_date, action
 end
 
