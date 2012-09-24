@@ -58,7 +58,9 @@ end
 
 task :solr do
   require_relative "lib/tobias/tasks"
-  Tobias.run_once Tobias::UpdateSolr
+  core_name = ENV['CORE'] || 'labs2'
+
+  Tobias.run_once Tobias::UpdateSolr, core_name
 end
 
 task :resolve do

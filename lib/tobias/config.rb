@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require "json"
 require "mongo"
 require "resque"
@@ -10,6 +11,7 @@ module Tobias
 
     @@filename = File.join(File.dirname(__FILE__), "..", "..", "config.json")
     @@location = ENV["CONFIG"] || "local"
+    @@solr_core_connections = {}
 
     def self.load!(filename = @@filename, location = @@location)
       File.open filename, "rb" do |file|
@@ -35,6 +37,17 @@ module Tobias
 
     def self.solr
       @@solr ||= RSolr.connect({:url => @@config['solr-server']})
+    end
+
+    # Create a solr client for a specific core
+    def self.solr_core core_name
+       if @@solr_core_connections.has_key?(core_name)
+        @@solr_core_connections[core_name]
+      else
+        core_connection = RSolr.connect({:url => "#{@@config['solr-server']}/#{core_name}"})
+        @@solr_core_connections[core_name] = core_connection
+        core_connection
+      end
     end
 
     def self.oai_client

@@ -254,10 +254,11 @@ module Tobias
       index_str
     end
 
-    def self.perform
+    def self.perform solr_core_name
       dois_coll = Config.collection "dois"
       categories_coll = Config.collection 'categories'
       issns_coll = Config.collection 'issns'
+      solr_core = Config.solr_core solr_core_name
       solr_docs = []
 
       dois_coll.find({}, {:timeout => false}) do |cursor|
@@ -358,8 +359,8 @@ module Tobias
             solr_docs << solr_doc
 
             if solr_docs.count % 1000 == 0
-              Config.solr.add solr_docs
-              Config.solr.update :data => "<commit/>"
+              solr_core.add solr_docs
+              solr_core.update :data => "<commit/>"
               solr_docs = []
             end
 
@@ -368,8 +369,8 @@ module Tobias
       end
 
       if not solr_docs.empty?
-        Config.solr.add solr_docs
-        Config.solr.update :data => "<commit/>"
+        solr_core.add solr_docs
+        solr_core.update :data => "<commit/>"
       end
 
     end
