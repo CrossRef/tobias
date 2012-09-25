@@ -67,3 +67,24 @@
   $ sudo service redis-server start
 
 * TODO Turn all this into deployment scripts.
+
+* whenever / cron jobs
+  
+  tobias comes with two sets of cron jobs; harvest_schedule.rb and
+  index_schedule.rb.
+
+  harvest_schedule.rb downloads OAI-PMH metadata and loads it into
+  mongo, once every two days.
+
+  index_schedule.rb reindexes mongo data in solr. It creates a new
+  solr core, indexes, and then switches it for the main core (labs1). 
+  Indexing takes place every Sunday.
+
+  Use whenever to install cron jobs:
+
+  $ bundle exec whenever -w -s 'config=fresno' -f config/index_schedule.rb
+
+  $ bundle exec whenever -w -s 'config=local' -f config/harvest_schedule.rb
+
+  Be sure to specify a config so that the cron jobs will be able to
+  find service hosts.
