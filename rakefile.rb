@@ -56,11 +56,14 @@ task :emit_urls do
   Tobias.run_once Tobias::EmitUrls
 end
 
-task :solr do
-  require_relative "lib/tobias/tasks"
-  core_name = ENV['CORE'] || 'labs2'
+task :index_core do
+  require_relative 'lib/tobias/tasks'
+  require_relative 'lib/tobias/solr'
 
-  Tobias.run_once Tobias::UpdateSolr, core_name
+  index_core_name = ENV['CORE'] || 'labs2'
+  other_core_name = ENV['OTHER'] || 'labs1'
+
+  Tobias.run_once Tobias::UpdateSolr, index_core_name, other_core_name
 end
 
 task :resolve do
@@ -88,4 +91,3 @@ task :scrape_doaj do
   require_relative 'lib/tobias/tasks'
   Tobias.run_once Tobias::DoajScrapeTask
 end
-
