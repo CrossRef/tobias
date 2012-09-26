@@ -38,8 +38,10 @@ task :harvest_recent do
   require_relative 'lib/tobias/harvest'
   require_relative 'lib/tobias/tasks'
 
+  # Harvest range from today-2 to today, which will actually
+  # harvest yesterday and the day before.
   from_date = Date.today - ENV['DAYS'].to_i
-  until_date = Date.today - 1
+  until_date = Date.today
 
   action = ENV['ACTION'] || 'dois'
 
