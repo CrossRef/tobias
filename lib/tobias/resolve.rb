@@ -43,7 +43,7 @@ module Tobias
         citation_text = row[3]
         matched_doi = row[4]
 
-        unless citation_text.empty? || resolved_doi.empty?
+        unless citation_text.empty? || matched_doi.empty?
           # For each citation that has a full text and matched
           # DOI, add it to a list of those that we will attempt
           # to match using CrossRef Metadata Search.
