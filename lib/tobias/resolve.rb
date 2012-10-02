@@ -50,7 +50,7 @@ module Tobias
           matched_citations << [citation_text, matched_doi]
         end
 
-        if matched_citation.count >= 1000
+        if matched_citations.count >= 1000
           compare_matches(stats, matched_citations)
           matched_citations = []
 
