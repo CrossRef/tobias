@@ -14,17 +14,29 @@ module Tobias
     def self.compare_matches stats, matched_citations
       response = CMS_CONN.post do |req|
         req.url '/links'
-        req.body = matched_citations.to_json
+        req.body = matched_citations.map { |c| c[0] }.to_json
       end
 
       File.open('matches.txt', 'a') do |matches_file|
         File.open('non_matches.txt', 'a') do |non_matches_file|    
-          JSON.parse(response.body).each do |match_info|
-            if match_info['match']
-              matches_file << "#{match_info['text']}\n"
-              stats[:match_count] = stats[:match_count].next
-            else
-              non_matches_file << "#{match_info['text']}\n"
+          results = JSON.parse(response.body)['results']
+          results.each_index do |index|
+            result = results[index]
+            comparison_success = false
+
+            if result['match'] 
+              result_doi = result['doi'].downcase
+              expected_doi = matched_citations[index][1].downcase
+
+              if result_doi == expected_doi
+                matches_file << "#{result['text']}\n"
+                stats[:match_count] = stats[:match_count].next
+                comparison_success = true
+              end
+            end
+
+            unless comparison_success
+              non_matches_file << "#{result['text']}\n"
               stats[:non_match_count] = stats[:non_match_count].next
             end
           end
