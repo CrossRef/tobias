@@ -38,6 +38,14 @@ module Tobias
 	end
       end
 
+      def citing_journal
+        if @citing_node.nil?
+          nil
+        else
+          @citing_journal = journal(@citing_node.parent)
+        end
+      end
+
       def publication_date
         if @publication_date.nil?
           @publication_date = {}
