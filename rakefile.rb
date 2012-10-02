@@ -93,3 +93,10 @@ task :scrape_doaj do
   require_relative 'lib/tobias/tasks'
   Tobias.run_once Tobias::DoajScrapeTask
 end
+
+task :compare_matches do
+  require_relative 'lib/tobias/tasks'
+  require_relative 'lib/tobias/resolve'
+
+  Tobias.run_once Tobias::CompareDoiMatch, ENV['FILE']
+end
