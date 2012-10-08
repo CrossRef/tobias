@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+require_relative 'helpers'
+
 module Tobias
 
   class UpdateSolr < ConfigTask
@@ -26,11 +28,26 @@ module Tobias
       }
     end
 
+    def self.record_last_index_time
+      File.open('last_index_time.txt', 'w') do |file|
+        file << Time.now
+      end
+    end
+
+    def self.last_index_time
+      @@last_index_time ||=
+        if File.exists?('last_index_time.txt')
+          Time.new(File.read('last_index_time.txt'))
+        else
+          nil
+        end
+    end
+
     def self.initials given_name
       given_name.split(/[\s\-]+/).map { |name| name[0] }.join(" ")
     end
 
-    def self.to_solr_content doc
+    def self.to_solr_content doc, citation_content
       index_str = ""
 
       if doc["published"]
@@ -60,7 +77,11 @@ module Tobias
 
       if doc["contributors"]
         doc["contributors"].each do |c|
-          index_str << " " + initials(c["given_name"]) if c["given_name"]
+          if full_author_name
+            index_str << " " + c['given_name'] if c['given_name']
+          else
+            index_str << " " + initials(c["given_name"]) if c["given_name"]
+          end
           index_str << " " + c["surname"] if c["surname"]
         end
       end
@@ -68,24 +89,28 @@ module Tobias
       index_str
     end
 
-    def self.perform index_core_name, other_core_name
-      # First we recreate the core, dropping its current index data.
-      clear_core(index_core_name)
-
+    def self.perform since_date, index_core_name, other_core_name
       dois_coll = Config.collection "dois"
       categories_coll = Config.collection 'categories'
       issns_coll = Config.collection 'issns'
       solr_core = Config.solr_core index_core_name
       solr_docs = []
 
-      dois_coll.find({}, {:timeout => false}) do |cursor|
+      query = {}
+      unless last_index_time.nil?
+        query[:updated_at] = {'$gt' => last_index_time}
+      end
+
+      record_last_index_time
+
+      dois_coll.find(query, {:timeout => false}) do |cursor|
         cursor.each do |doc|
           if ["journal_article", "conference_paper"].include? doc["type"]
-
             solr_doc = {
               :doiKey => doc['doi'],
-              :doi => doc['doi'].downcase,
-              :content => to_solr_content(doc),
+              :doi => doc['doi'],
+              :content => to_solr_content(doc, true),
+              :content_citation => to_solr_content(doc, false),
               :type => doc['type'],
               :category => [],
               :oa_status => 'Other'

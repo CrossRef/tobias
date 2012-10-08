@@ -1,3 +1,5 @@
+require_relative '../helpers'
+
 module Tobias
   module Oai
     class Record
@@ -10,7 +12,8 @@ module Tobias
       @@citing_kinds = ["journal_article", "conference_paper", "book_metadata",
                         "book_series_metadata", "book_set_metadata", "content_item",
                         "dissertation", "report-paper_metadata", "series_metadata",
-                        "standard_metadata", "standard_series_metadata", "dataset"]
+                        "standard_metadata", "standard_series_metadata", "dataset",
+                        "component"]
 
       def initialize record_node
         @record_node = record_node
@@ -32,7 +35,7 @@ module Tobias
 	  {}
 	else
           @doi ||= {
-            :doi => @citing_node.at_css("doi_data doi", @@ns).text,
+            :doi => Helpers.normalise_doi(@citing_node.at_css("doi_data doi", @@ns).text),
             :resource => @citing_node.at_css("doi_data resource", @@ns).text
           }
 	end
@@ -94,7 +97,7 @@ module Tobias
       def dois
         @dois ||= @record_node.css("doi_data", @@ns).map do |doi_node|
           {
-            :doi => doi_node.at_css("doi", @@ns).text,
+            :doi => Helpers.normalise(doi_node.at_css("doi", @@ns).text),
             :parent => doi_node.parent,
             :type => normalise_work_name(doi_node.parent.name)
           }
@@ -106,7 +109,6 @@ module Tobias
         @bibo_records ||= dois.map do |doi_info|
           record_base = {
             :doi => doi_info[:doi],
-            :normal_doi => doi_info[:doi].downcase,
             :type => doi_info[:type],
             :random_index => rand
           }

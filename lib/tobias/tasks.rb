@@ -55,6 +55,22 @@ module Tobias
     end
   end
 
+  class SetupDoiIndexes < ConfigTask
+    def self.perform collection_name
+      coll = Config.collection(collection_name)
+      coll.ensure_index [[:random_index, 1]]
+      coll.ensure_index [['published.year', 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], ['published.year', 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], ['journal.p_issn', 1], ['published.year', 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], ['journal.full_title', 1], ['published.year', 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], ['journal.p_issn', 1], [:random_index, 1]]
+      coll.ensure_index [[:type, 1], ['journal.full_title', 1], [:random_index, 1]]
+      coll.ensure_index [['doi', 1]]
+      coll.ensure_index [['created_at', 1]]
+    end
+  end
+
   class DispatchDirectory
     @queue = :injest
 
@@ -117,7 +133,7 @@ module Tobias
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
 
-        if action == "citations"
+        if action.start_with?("citations")
           docs = record.citations.map do |citation|
             {
               :from => record.citing_doi,
@@ -132,8 +148,9 @@ module Tobias
 
           coll.insert(docs)
           grid.delete(oid)
-        elsif action == "dois"
+        elsif action.start_with?("dois")
           record.bibo_records.each do |bibo_record|
+            bibo_record[:updated_at] = Time.now
             coll.update({"doi" => bibo_record[:doi]}, bibo_record, {:upsert => true})
           end
         end

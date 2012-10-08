@@ -68,6 +68,12 @@ task :index_core do
   Tobias.run_once Tobias::UpdateSolr, index_core_name, other_core_name
 end
 
+task :setup_doi_indexes do
+  require_relative 'lib/tobias/tasks'
+
+  Tobias.run_once Tobias::SetupDoiIndexes, ENV['COLLECTION']
+end
+
 task :resolve do
   require_relative "lib/tobias/tasks"
   Tobias.run_once Tobias::ResolveCitations
