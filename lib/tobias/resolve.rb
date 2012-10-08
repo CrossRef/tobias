@@ -18,13 +18,13 @@ module Tobias
       end
 
       File.open('matches.txt', 'a') do |matches_file|
-        File.open('non_matches.txt', 'a') do |non_matches_file|    
+        File.open('non_matches.txt', 'a') do |non_matches_file|
           File.open('false_matches.txt', 'a') do |false_matches_file|
             results = JSON.parse(response.body)['results']
             results.each_index do |index|
               result = results[index]
               
-              if result['match'] 
+              if result['match']
                 result_doi = result['doi'].downcase
                 expected_doi = matched_citations[index][1].downcase
                 
@@ -64,7 +64,7 @@ module Tobias
           matched_citations << [citation_text, matched_doi]
         end
 
-        if matched_citations.count >= 10
+        if matched_citations.count >= 100
           compare_matches(stats, matched_citations)
           matched_citations = []
 
