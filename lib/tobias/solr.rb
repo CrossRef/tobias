@@ -77,7 +77,7 @@ module Tobias
 
       if doc["contributors"]
         doc["contributors"].each do |c|
-          if full_author_name
+          if citation_content
             index_str << " " + c['given_name'] if c['given_name']
           else
             index_str << " " + initials(c["given_name"]) if c["given_name"]
