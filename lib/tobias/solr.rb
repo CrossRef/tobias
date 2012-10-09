@@ -89,7 +89,7 @@ module Tobias
       index_str
     end
 
-    def self.perform since_date, index_core_name, other_core_name
+    def self.perform index_core_name, other_core_name
       dois_coll = Config.collection "dois"
       categories_coll = Config.collection 'categories'
       issns_coll = Config.collection 'issns'
