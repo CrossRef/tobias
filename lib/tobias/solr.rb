@@ -28,16 +28,16 @@ module Tobias
       }
     end
 
-    def self.record_last_index_time
-      File.open('last_index_time.txt', 'w') do |file|
+    def self.record_last_index_time core_name
+      File.open("last_index_time_#{core_name}.txt", 'w') do |file|
         file << Time.now
       end
     end
 
-    def self.last_index_time
+    def self.last_index_time core_name
       @@last_index_time ||=
-        if File.exists?('last_index_time.txt')
-          Time.new(File.read('last_index_time.txt'))
+        if File.exists?("last_index_time_#{core_name}.txt")
+          Time.new(File.read("last_index_time_#{core_name}.txt"))
         else
           nil
         end
@@ -97,11 +97,11 @@ module Tobias
       solr_docs = []
 
       query = {}
-      unless last_index_time.nil?
-        query[:updated_at] = {'$gt' => last_index_time}
+      unless last_index_time(index_core_name).nil?
+        query[:updated_at] = {'$gt' => last_index_time(index_core_name)}
       end
 
-      record_last_index_time
+      record_last_index_time(index_core_name)
 
       dois_coll.find(query, {:timeout => false}) do |cursor|
         cursor.each do |doc|
