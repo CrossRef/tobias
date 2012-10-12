@@ -90,7 +90,7 @@ module Tobias
     end
 
     def self.perform index_core_name, other_core_name
-      dois_coll = Config.collection "dois"
+      dois_coll = Config.collection 'dois'
       categories_coll = Config.collection 'categories'
       issns_coll = Config.collection 'issns'
       solr_core = Config.solr_core index_core_name

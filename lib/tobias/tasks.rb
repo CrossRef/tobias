@@ -83,25 +83,6 @@ module Tobias
     end
   end
 
-  # Same as DispatchDirectory, except remembers files it dispatches and will never
-  # dispatch the same file twice. Uniqueness based on file path, so don't move
-  # files around between runs.
-  class DispatchIncrementalDirectory
-    @queue = :injest
-    
-    def self.perform(directory_name, action)
-      
-      Dir.new(directory_name).each do |filename|
-        path = File.join(directory_name, filename)
-
-        if path.end_with?('.xml') && !file_dispatched_for_action?(path, action)
-          Resque.enqueue(SplitRecordList, path, action)
-          record_file_dispatch(path, action)
-        end
-      end
-    end
-  end
-
   class SplitRecordList < ConfigTask
     @queue = :injest
 
