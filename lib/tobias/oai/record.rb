@@ -97,7 +97,7 @@ module Tobias
       def dois
         @dois ||= @record_node.css("doi_data", @@ns).map do |doi_node|
           {
-            :doi => Helpers.normalise(doi_node.at_css("doi", @@ns).text),
+            :doi => Helpers.normalise_doi(doi_node.at_css("doi", @@ns).text),
             :parent => doi_node.parent,
             :type => normalise_work_name(doi_node.parent.name)
           }
