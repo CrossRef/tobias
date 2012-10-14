@@ -28,16 +28,30 @@ module Tobias
       }
     end
 
+    def self.get_core_data_dir core_name
+      result = Config.solr.get 'admin/cores', :params => {
+        :action => 'STATUS',
+        :core => core_name
+      }
+
+      result['response']['status'][core_name]['dataDir']
+    end
+
+    def self.last_index_time_file core_name
+      "last_index_time.#{File.basename(get_core_data_dir(core_name))}.txt"
+    end
+
     def self.record_last_index_time core_name
-      File.open("last_index_time_#{core_name}.txt", 'w') do |file|
+      File.open(last_index_time_file(core_name), 'w') do |file|
         file << Time.now
       end
     end
 
     def self.last_index_time core_name
+      filename = last_index_time_file(core_name)
       @@last_index_time ||=
-        if File.exists?("last_index_time_#{core_name}.txt")
-          Time.new(File.read("last_index_time_#{core_name}.txt"))
+        if File.exists?(filename)
+          Time.new(File.read(filename))
         else
           nil
         end
