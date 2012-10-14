@@ -104,14 +104,22 @@ module Tobias
     end
 
     def self.perform index_core_name, other_core_name
+      puts "Indexing to #{index_core_name}"
+
       dois_coll = Config.collection 'dois'
       categories_coll = Config.collection 'categories'
       issns_coll = Config.collection 'issns'
       solr_core = Config.solr_core index_core_name
       solr_docs = []
+      indexed_count = 0
 
       query = {}
-      unless last_index_time(index_core_name).nil?
+      index_time = last_index_time(index_core_name)
+
+      if index_time.nil?
+        puts "First index. Performing full index."
+      else
+        puts "Indexing from #{index_time}."
         query[:updated_at] = {'$gt' => last_index_time(index_core_name)}
       end
 
@@ -218,6 +226,7 @@ module Tobias
               solr_core.add solr_docs
               solr_core.update :data => "<commit/>"
               solr_docs = []
+              indexed_count = indexed_count + 1000
             end
 
           end
@@ -227,10 +236,16 @@ module Tobias
       if not solr_docs.empty?
         solr_core.add solr_docs
         solr_core.update :data => "<commit/>"
+        indexed_count = indexed_count + solr_docs.count
       end
+
+      puts "Indexing of #{index_core_name} complete."
+      puts "Indexed #{indexed_count} documents (new or updated)."
 
       # Finally, we swap the newly indexed core with another.
       swap_cores(index_core_name, other_core_name)
+
+      puts "Swapped #{index_core_name} with #{other_core_name}."
     end
 
   end
