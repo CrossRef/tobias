@@ -4,7 +4,7 @@ require_relative 'helpers'
 module Tobias
 
   class UpdateSolr < ConfigTask
-    @queue = :solr
+    @queue = :index
 
     def self.clear_core core_name
       Config.solr.get 'admin/cores', :params => {
