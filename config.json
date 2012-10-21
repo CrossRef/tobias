@@ -15,7 +15,7 @@
     "data-home": "/home/kward/tobias-data"
   },
   "fresno": {
-    "redis-server": "localhost:6379",
+    "redis-server": "5.9.51.150:6379",
     "mongo-server": "5.9.51.150",
     "mongo-name": "crossref",
     "solr-server": "http://localhost:8983/solr",
