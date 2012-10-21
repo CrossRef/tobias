@@ -52,6 +52,7 @@ module Tobias
       @@last_index_time ||=
         if File.exists?(filename)
           Time.new(File.read(filename))
+          
         else
           nil
         end

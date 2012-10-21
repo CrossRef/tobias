@@ -5,16 +5,32 @@ require "rspec/core/rake_task"
 desc "Run RSpec over tests in /spec"
 RSpec::Core::RakeTask.new
 
-# Include resque:work and resque:worker tasks.
-require "resque/tasks"
+# Include resque:work, resque:worker and resque:scheduler tasks.
+require 'resque/tasks'
+require 'resque_scheduler/tasks'
 
-task "resque:setup" do
-  require_relative 'lib/tobias/harvest'
-  require_relative "lib/tobias/tasks"
-  require_relative "lib/tobias/config"
+namespace 'resque' do
+  task 'setup' do
+    require 'resque'
+    require 'resque_scheduler'
+    require 'resque/scheduler'
 
-  Tobias::Config.load!
-  Tobias::Config.redis!
+    require_relative 'lib/tobias/harvest'
+    require_relative "lib/tobias/tasks"
+    require_relative "lib/tobias/config"
+
+    Tobias::Config.load!
+    Tobias::Config.redis!
+
+    case ENV['SCHEDULE']
+    when 'harvest'
+      Resque.schedule = YAML.load_file('config/harvest_schedule.yaml')
+    when 'index'
+      Resque.schedule = YAML.load_file('config/index_schedule.yaml')
+    else
+      puts 'Select a schedule by specifying SCHEDULE as harvest or index.'
+    end
+  end
 end
 
 # Create a directory loading task.
