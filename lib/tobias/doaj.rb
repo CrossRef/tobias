@@ -8,7 +8,8 @@ require_relative 'helpers'
 module Tobias
   
   class DoajScrapeTask < ConfigTask
-    
+    @queue = :harvest
+
     BY_TITLE_BASE_URL = 'http://www.doaj.org/doaj?func=byTitle'
     BY_TITLE_LETTER_PARAM = 'query'
     BY_TITLE_PAGE_PARAM = 'p'
