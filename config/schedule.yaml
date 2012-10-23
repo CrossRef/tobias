@@ -7,3 +7,9 @@ scrape_doaj:
   cron: "0 23 * * 6"
   class: "Tobias::DoajScrapeTask"
   queue: harvest
+
+index_second_core:
+  cron: "0 23 * * 0"
+  class: "Tobias::ScheduledIndex"
+  queue: index
+  

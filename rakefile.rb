@@ -21,15 +21,8 @@ namespace 'resque' do
 
     Tobias::Config.load!
     Tobias::Config.redis!
-
-    case ENV['SCHEDULE']
-    when 'harvest'
-      Resque.schedule = YAML.load_file('config/harvest_schedule.yaml')
-    when 'index'
-      Resque.schedule = YAML.load_file('config/index_schedule.yaml')
-    else
-      puts 'Select a schedule by specifying SCHEDULE as harvest or index.'
-    end
+    
+    Resque.schedule = YAML.load_file('config/schedule.yaml')
   end
 end
 

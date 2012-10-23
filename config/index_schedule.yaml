@@ -1,5 +1,0 @@
-index_on_second_core:
-  cron: "0 23 * * 0"
-  class: "Tobias::ScheduledIndex"
-  queue: index
-  
