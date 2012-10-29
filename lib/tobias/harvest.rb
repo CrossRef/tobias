@@ -60,12 +60,12 @@ module Tobias
 
     def self.queue_up from_date, until_date, action
       Resque.enqueue(GetChangedRecords, from_date, until_date, action)
-      puts "Enqueue harvest for #{f} to #{u}"
+      puts "Enqueue harvest for #{from_date.to_s} to #{until_date.to_s}"
     end
 
     def self.perform from_date, until_date, action
-      from_date = from_date.strftime('%Y-%m-%d')
-      until_date = until_date.strftime('%Y-%m-%d')
+      from_date = Date.strptime(from_date, '%Y-%m-%d')
+      until_date = Date.strptime(until_date, '%Y-%m-%d')
      
       days = until_date - from_date
 
