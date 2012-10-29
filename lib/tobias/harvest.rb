@@ -59,13 +59,14 @@ module Tobias
     @queue = :harvest
 
     def self.queue_up from_date, until_date, action
-      f = from_date.strftime('%Y-%m-%d')
-      u = until_date.strftime('%Y-%m-%d')
-      Resque.enqueue(GetChangedRecords, f, u, action)
+      Resque.enqueue(GetChangedRecords, from_date, until_date, action)
       puts "Enqueue harvest for #{f} to #{u}"
     end
 
     def self.perform from_date, until_date, action
+      from_date = from_date.strftime('%Y-%m-%d')
+      until_date = until_date.strftime('%Y-%m-%d')
+     
       days = until_date - from_date
 
       (days / DAYS_PER_HARVEST).to_i.times do
