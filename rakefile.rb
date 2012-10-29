@@ -15,9 +15,12 @@ namespace 'resque' do
     require 'resque_scheduler'
     require 'resque/scheduler'
 
+    require_relative 'lib/tobias/doaj'
     require_relative 'lib/tobias/harvest'
-    require_relative "lib/tobias/tasks"
-    require_relative "lib/tobias/config"
+    require_relative 'lib/tobias/solr'
+    require_relative 'lib/tobias/tasks'
+    require_relative 'lib/tobias/config'
+    require_relative 'lib/tobias/schedule'
 
     Tobias::Config.load!
     Tobias::Config.redis!
