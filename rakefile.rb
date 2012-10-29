@@ -40,10 +40,8 @@ end
 task :harvest_range do
   require_relative 'lib/tobias/harvest'
   require_relative 'lib/tobias/tasks'
-  from_date = Date.strptime(ENV['FROM'], '%Y-%m-%d')
-  until_date = Date.strptime(ENV['UNTIL'], '%Y-%m-%d')
   action = ENV['ACTION'] || 'dois'
-  Tobias.run_once Tobias::HarvestDateRange, from_date, until_date, action
+  Tobias.run_once Tobias::HarvestDateRange, ENV['FROM'], ENV['UNTIL'], action
 end
 
 task :harvest_recent do
@@ -56,6 +54,9 @@ task :harvest_recent do
   until_date = Date.today
 
   action = ENV['ACTION'] || 'dois'
+
+  from_date = from_date.strftime('%Y-%m-%d')
+  until_date = until_date.strftime('%Y-%m-%d')
 
   Tobias.run_once Tobias::HarvestDateRange, from_date, until_date, action
 end
