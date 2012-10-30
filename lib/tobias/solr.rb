@@ -34,7 +34,7 @@ module Tobias
         :core => core_name
       }
 
-      result['response']['status'][core_name]['dataDir']
+      result['status'][core_name]['dataDir']
     end
 
     def self.last_index_time_file core_name
