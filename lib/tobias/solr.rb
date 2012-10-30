@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 require_relative 'helpers'
 
+require 'time'
+
 module Tobias
 
   class UpdateSolr < ConfigTask
@@ -51,8 +53,7 @@ module Tobias
       filename = last_index_time_file(core_name)
       @@last_index_time ||=
         if File.exists?(filename)
-          Time.new(File.read(filename))
-          
+          Time.parse(File.read(filename))
         else
           nil
         end
