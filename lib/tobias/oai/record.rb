@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require_relative '../helpers'
 
 module Tobias
@@ -135,6 +136,25 @@ module Tobias
         end
       end
 
+      def resources
+        @resources ||= @record_node.css('resource', @@ns).map do |resource_node|
+          case resource_node.parent.name
+          when 'doi_data'
+            # standard resolution url
+            {:type => :standard, :url => resource_node.text}
+          when 'item'
+            # crawler url
+            {
+              :type => :crawler,
+              :crawler => resource_node.parent.attributes['crawler'],
+              :label => resource_node.parent.attributes['label'],
+              :country => resource_node.parent.attributes['country'],
+              :url => resource_node.text
+            }
+          end
+        end
+      end
+
       private
 
       def children_to_hash parent, ignore=[]
@@ -142,7 +162,7 @@ module Tobias
         hsh = {}
         parent.children.each do |child|
           key = child.name.to_sym
-          if not ignore.member? key 
+          if not ignore.member? key
             hsh[key] = child.text
           end
         end
@@ -207,7 +227,7 @@ module Tobias
           integer_hash
         end
       end
-
+          
     end
   end
 end

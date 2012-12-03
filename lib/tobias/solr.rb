@@ -87,8 +87,8 @@ module Tobias
       index_str << " " + doc["volume"] if doc["volume"]
 
       if doc["pages"]
-        index_str << " " + doc["pages"]["first"] if doc["pages"]["first"]
-        index_str << " " + doc["pages"]["last"] if doc["pages"]["last"]
+        index_str << " " + doc["pages"]["first_page"] if doc["pages"]["first_page"]
+        index_str << " " + doc["pages"]["last_page"] if doc["pages"]["last_page"]
       end
 
       if doc["contributors"]
@@ -140,11 +140,32 @@ module Tobias
               :oa_status => 'Other'
             }
               
-            # Publication year
+            # Publication date
 
-            if doc.has_key?('published') && doc['published'].has_key?('year')
-              solr_doc[:year] = doc['published']['year'].to_i
-              solr_doc[:hl_year] = doc['published']['year'].to_i
+            if doc.has_key?('published')
+              if doc['published'].has_key?('year')
+                solr_doc[:year] = doc['published']['year'].to_i
+                solr_doc[:hl_year] = doc['published']['year'].to_i
+              end
+
+              if doc['published'].has_key?('month')
+                solr_doc[:month] = doc['published']['month'].to_i
+              end
+
+              if doc['published'].has_key?('day')
+                solr_doc[:day] = doc['published']['day'].to_i
+              end
+            end
+
+            # Pages
+            
+            if doc.has_key?('pages')
+              if doc['pages'].has_key?('first_page')
+                solr_doc['hl_first_page'] = doc['pages']['first_page']
+              end
+              if doc['pages'].has_key?('last_page')
+                solr_doc['hl_last_page'] = doc['pages']['last_page']
+              end
             end
             
             # Publication name
@@ -220,8 +241,16 @@ module Tobias
               end
 
               solr_doc[:hl_authors] = authors.join(', ')
+
+              first_author = doc['contributors'].first
+              
+              solr_doc[:first_author_given] = first_author['given_name']
+              solr_doc[:first_author_surname] = first_author['surname']
             end
-          
+
+            # Mongo doc id
+            solr_doc[:mongo_id] = doc['_id'].to_s
+
             solr_docs << solr_doc
 
             if solr_docs.count % 1000 == 0

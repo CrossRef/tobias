@@ -114,7 +114,8 @@ module Tobias
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
 
-        if action.start_with?("citations")
+        case action
+        when "citations"
           docs = record.citations.map do |citation|
             {
               :from => record.citing_doi,
@@ -128,14 +129,18 @@ module Tobias
           end
 
           coll.insert(docs)
-          grid.delete(oid)
-        elsif action.start_with?("dois")
+        when "dois"
           record.bibo_records.each do |bibo_record|
             bibo_record[:updated_at] = Time.now
             coll.update({"doi" => bibo_record[:doi]}, bibo_record, {:upsert => true})
           end
+        when "resources"
+          record.resources.each do |resource|
+            puts resource if resource[:type] == :crawler
+          end
         end
 
+        grid.delete(oid)
       end
     end
   end
