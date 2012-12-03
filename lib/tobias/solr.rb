@@ -242,10 +242,14 @@ module Tobias
 
               solr_doc[:hl_authors] = authors.join(', ')
 
-              first_author = doc['contributors'].first
+              unless doc['contributors'].nil? || doc['contributors'].count.zero?
+                first_author = doc['contributors'].first
               
-              solr_doc[:first_author_given] = first_author['given_name']
-              solr_doc[:first_author_surname] = first_author['surname']
+                unless first_author.nil?
+                  solr_doc[:first_author_given] = first_author['given_name']
+                  solr_doc[:first_author_surname] = first_author['surname']
+                end
+              end
             end
 
             # Mongo doc id
