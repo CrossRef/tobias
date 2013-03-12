@@ -13,20 +13,8 @@ module Tobias
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
-    def self.perform from_date, until_date, action
-      from_date = Date.strptime(from_date, '%Y-%m-%d')
-      until_date = Date.strptime(until_date, '%Y-%m-%d')
-      leaf_dir = "#{from_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
-      data_path = File.join(Config.data_home, 'oai', leaf_dir)
+    def self.run_query query, data_path, action
       resumption_count = 0
-      query = {
-        :from => from_date,
-        :until => until_date,
-        :metadata_prefix => 'cr_unixml'
-      }
-
-      FileUtils.mkpath(data_path)
-
       response = Config.oai_client.list_records(query)
       File.open(File.join(data_path, "#{resumption_count}.xml"), 'w') do |file|
         file << response.doc
@@ -50,6 +38,25 @@ module Tobias
             sleep 3
           end
         end
+      end
+    end
+
+    def self.perform from_date, until_date, action
+      from_date = Date.strptime(from_date, '%Y-%m-%d')
+      until_date = Date.strptime(until_date, '%Y-%m-%d')
+
+      query = {
+        :from => from_date,
+        :until => until_date,
+        :metadata_prefix => 'cr_unixml'
+      }
+
+      ['J', 'B', 'S'].each do |set|
+        leaf_dir = "#{set}-#{from_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
+        data_path = File.join(Config.data_home, 'oai', leaf_dir)
+        FileUtils.mkpath(data_path)
+        query = query.merge({:set => set})
+        run_query(query, data_path, action)
       end
     end
   end
