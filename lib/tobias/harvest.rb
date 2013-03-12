@@ -9,7 +9,7 @@ module Tobias
 
   DAYS_PER_HARVEST = 2
 
-  # Find all changed records and injest them into mongo.
+  # Find all changed records and load them into mongo.
   class GetChangedRecords < ConfigTask
     @queue = :harvest
 
@@ -55,8 +55,7 @@ module Tobias
         leaf_dir = "#{set}-#{from_date.strftime('%Y-%m-%d')}-to-#{until_date.strftime('%Y-%m-%d')}"
         data_path = File.join(Config.data_home, 'oai', leaf_dir)
         FileUtils.mkpath(data_path)
-        query = query.merge({:set => set})
-        run_query(query, data_path, action)
+        run_query(query.merge({:set => set}), data_path, action)
       end
     end
   end

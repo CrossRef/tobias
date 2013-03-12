@@ -94,12 +94,12 @@ end
 
 task :categories do
   require_relative 'lib/tobias/tasks'
-  Tobias.run_once Tobias::InjestCategories, ENV['FILE']
+  Tobias.run_once Tobias::LoadCategories, ENV['FILE']
 end
 
 task :category_names do
   require_relative 'lib/tobias/tasks'
-  Tobias.run_once Tobias::InjestCategoryNames, ENV['FILE']
+  Tobias.run_once Tobias::LoadCategoryNames, ENV['FILE']
 end
 
 task :add_norm_dois do

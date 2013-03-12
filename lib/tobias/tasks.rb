@@ -72,7 +72,7 @@ module Tobias
   end
 
   class DispatchDirectory
-    @queue = :injest
+    @queue = :load
 
     def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
@@ -84,7 +84,7 @@ module Tobias
   end
 
   class SplitRecordList < ConfigTask
-    @queue = :injest
+    @queue = :load
 
     def self.perform(filename, action)
       grid = Config.grid
@@ -103,7 +103,7 @@ module Tobias
   end
 
   class ParseRecords < ConfigTask
-    @queue = :injest
+    @queue = :load
 
     def self.perform(ids, action)
       grid = Config.grid
@@ -213,8 +213,8 @@ module Tobias
   end
 
 
-  class InjestCategories < ConfigTask
-    @queue = :injest
+  class LoadCategories < ConfigTask
+    @queue = :load
 
     def self.perform filename
       coll = Config.collection 'issns'
@@ -239,8 +239,8 @@ module Tobias
 
   end
 
-  class InjestCategoryNames < ConfigTask
-    @queue = :injest
+  class LoadCategoryNames < ConfigTask
+    @queue = :load
 
     def self.perform filename
       coll = Config.collection 'categories'
