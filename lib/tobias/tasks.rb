@@ -12,9 +12,7 @@ require_relative 'helpers'
 module Tobias
 
   RECORD_CHUNK_SIZE = 5000
-
   URL_CHUNK_SIZE = 1000
-
   URL_SAMPLE_FREQ = 0.1
 
   def self.run_once task, *args
@@ -113,8 +111,9 @@ module Tobias
       ids.each do |id|
         oid = BSON::ObjectId.from_string id
         record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
+        action_task = action.split('_').first
 
-        case action
+        case action_task
         when "citations"
           docs = record.citations.map do |citation|
             {

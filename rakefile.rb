@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Create an rspec test runner task.
 require "rspec/core/rake_task"
+require 'yaml'
 
 desc "Run RSpec over tests in /spec"
 RSpec::Core::RakeTask.new
