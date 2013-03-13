@@ -10,6 +10,20 @@ God.contact(:email) do |c|
   c.to_email = 'labs@crossref.org'
 end
 
+God.watch do |w|
+  w.name = 'tobias-scheduler'
+  w.group = 'tobias-scheduler'
+  w.start = 'bundle exec rake resque:scheduler'
+  w.uid = 'tobias'
+  w.gid = 'tobias'
+
+  w.transition(:up, :start) do |on|
+    on.condition(:process_exists) do |c|
+      c.notify = 'labs'
+    end
+  end
+end
+
 def monitor_workers kind, count
   count.times do |c|
     God.watch do |w|
