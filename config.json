@@ -20,5 +20,5 @@
     "mongo-name": "crossref",
     "solr-server": "http://localhost:8983/solr",
     "data-home": "/home/tobias/data"
-  },
+  }
 }
