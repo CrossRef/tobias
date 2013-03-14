@@ -99,6 +99,7 @@ module Tobias
         @dois ||= @record_node.css("doi_data", @@ns).map do |doi_node|
           {
             :doi => Helpers.normalise_doi(doi_node.at_css("doi", @@ns).text),
+            :display_doi => doi_node.at_css('doi', @@ns).text,
             :parent => doi_node.parent,
             :type => normalise_work_name(doi_node.parent.name)
           }
@@ -110,6 +111,7 @@ module Tobias
         @bibo_records ||= dois.map do |doi_info|
           record_base = {
             :doi => doi_info[:doi],
+            :display_doi => doi_info[:display_doi],
             :type => doi_info[:type],
             :random_index => rand
           }
