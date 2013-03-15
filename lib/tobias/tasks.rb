@@ -75,43 +75,23 @@ module Tobias
     def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
         if filename.end_with? ".xml"
-          Resque.enqueue(SplitRecordList, File.join(directory_name, filename), action)
+          Resque.enqueue(ParseRecordList, File.join(directory_name, filename), action)
         end
       end
     end
   end
 
-  class SplitRecordList < ConfigTask
+  class ParseRecordList < ConfigTask
     @queue = :load
 
     def self.perform(filename, action)
       grid = Config.grid
       ids = []
+      action_task = action.split('_').first
+      coll = Config.collection(action.to_s)
 
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
-        ids << grid.put(record_xml).to_s
-        if (ids.count % RECORD_CHUNK_SIZE).zero?
-          Resque.enqueue(ParseRecords, ids, action)
-          ids = []
-        end
-      end
-
-      Resque.enqueue(ParseRecords, ids, action) unless ids.empty?
-    end
-  end
-
-  class ParseRecords < ConfigTask
-    @queue = :load
-
-    def self.perform(ids, action)
-      grid = Config.grid
-      coll = Config.collection action.to_s
-      docs = []
-
-      ids.each do |id|
-        oid = BSON::ObjectId.from_string id
-        record = Oai::Record.new(Nokogiri::XML(grid.get(oid).data))
-        action_task = action.split('_').first
+        record = Oai::Record.new(record_xml)
 
         case action_task
         when "citations"
@@ -138,8 +118,6 @@ module Tobias
             puts resource if resource[:type] == :crawler
           end
         end
-
-        grid.delete(oid)
       end
     end
   end
