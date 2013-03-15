@@ -113,10 +113,6 @@ module Tobias
             bibo_record[:updated_at] = Time.now
             coll.update({"doi" => bibo_record[:doi]}, bibo_record, {:upsert => true})
           end
-        when "resources"
-          record.resources.each do |resource|
-            puts resource if resource[:type] == :crawler
-          end
         end
       end
     end

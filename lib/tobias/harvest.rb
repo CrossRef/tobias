@@ -30,7 +30,7 @@ module Tobias
             File.open(file_path, 'w') do |file|
               file << response.doc
             end
-            Resque.enqueue(SplitRecordList, file_path, action)
+            Resque.enqueue(ParseRecordList, file_path, action)
             record_file_dispatch(file_path, action)
             break
           rescue Exception => e
