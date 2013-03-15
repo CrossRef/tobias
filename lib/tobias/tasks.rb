@@ -91,7 +91,7 @@ module Tobias
       coll = Config.collection(action.to_s)
 
       Oai::ListRecords.new(File.new(filename)).each_record do |record_xml|
-        record = Oai::Record.new(record_xml)
+        record = Oai::Record.new(Nokogiri::XML(record_xml))
 
         case action_task
         when "citations"
