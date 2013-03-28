@@ -75,7 +75,7 @@ module Tobias
     def self.perform(directory_name, action)
       Dir.new(directory_name).each do |filename|
         file_path = File.join(directory_name, filename)
-        if File.directory?(file_path)
+        if filename != '.' && filename != '..' && File.directory?(file_path)
           Resque.enqueue(DispatchDirectory, file_path, action)
         elsif filename.end_with?('.xml')
           Resque.enqueue(ParseRecordList, file_path, action)
